@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- this file was automatically generated with the scPackageTools Powershell module -->
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>chocolateyPkgBuilder</id>
+    <version>1.0.0</version>
+    <authors>Marc Sutter</authors>
+    <owners></owners>
+    <projectUrl>https://gitlab.swisscloud.io/powershell/chocolateyPkgBuilder</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Powershell Module providing Chocolatey Package Builder Functions</description>
+    <copyright>Marc Sutter 2014</copyright>
+    <tags>chocolateyPkgBuilder Chocolatey Powershell Module</tags>
+    <dependencies>
+      <dependency id="eps" />
+      <dependency id="poweryaml" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+    <file src="**" target="files" exclude="tools\**;**\*.Psake.ps1;**\*.Psake.psm1;**\*.Tests.ps1;**\*.Tests.psm1" />
+  </files>
+</package>
