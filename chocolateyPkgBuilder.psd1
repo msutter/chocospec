@@ -50,7 +50,8 @@ Copyright = '(c) 2015 Marc Sutter. All rights reserved.'
 # Modules that must be imported into the global environment prior to importing this module
 RequiredModules = @(
   'Eps',
-  'PowerYaml'
+  'PowerYaml',
+  'ZipParts',
 )
 
 # Assemblies that must be loaded prior to importing this module
