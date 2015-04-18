@@ -15,8 +15,7 @@ RootModule = 'chocolateyPkgBuilder.psm1'
 ModuleVersion = '1.0'
 
 # ID used to uniquely identify this module
-GUID = '5c732b4a-9fb3-4c6d-961z-97e877b8e8b6'
-
+GUID = 'e7dd7e79-437a-4f66-a61b-51bb843920a3'
 # Author of this module
 Author = 'Marc Sutter'
 
