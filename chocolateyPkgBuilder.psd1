@@ -16,6 +16,7 @@ ModuleVersion = '1.0'
 
 # ID used to uniquely identify this module
 GUID = 'e7dd7e79-437a-4f66-a61b-51bb843920a3'
+
 # Author of this module
 Author = 'Marc Sutter'
 
