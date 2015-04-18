@@ -11,11 +11,6 @@
     <description>Powershell Module providing Chocolatey Package Builder Functions</description>
     <copyright>Marc Sutter 2014</copyright>
     <tags>chocolateyPkgBuilder Chocolatey Powershell Module</tags>
-    <dependencies>
-      <dependency id="eps" />
-      <dependency id="poweryaml" />
-      <dependency id="zipparts" />
-    </dependencies>
   </metadata>
   <files>
     <file src="tools\**" target="tools" />
