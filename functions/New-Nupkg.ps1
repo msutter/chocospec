@@ -15,7 +15,7 @@ Function New-Nupkg
 
         [ValidateScript( { Test-Path($_) -PathType Container } )]
         [Parameter(Mandatory = $false)]
-        [string]$BasePath,
+        [string]$BasePath = './',
 
         [ValidateScript( {Test-Path($_) } )]
         [Parameter(Mandatory = $false)]
@@ -32,7 +32,7 @@ Function New-Nupkg
             $AbsNuspecPath = Join-Path -Path (Get-Location) -ChildPath $NuspecPath
         }
 
-        $null = & "${NugetCommand}" pack $AbsNuspecPath -BasePath $BasePath -OutputDirectory $OutputDirectory -NoPackageAnalysis 2>&1
+        & "${NugetCommand}" pack $AbsNuspecPath -BasePath $BasePath -OutputDirectory $OutputDirectory -NoPackageAnalysis 2>&1
 
     } catch {
       Write-Error "$($_.Exception.Message)"

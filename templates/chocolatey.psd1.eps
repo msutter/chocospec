@@ -1,0 +1,72 @@
+`@{
+
+  # Package Id as specified in the nuspec file
+  PackageId = '$id'
+
+<%  if ($Prefix) { %>
+  # ------- FILES INSTALL -------- #
+  # Install location of files in the files directory. (the path to prefix files with when installing)
+  #
+  # This path must exists !
+  #   if not create it in the chocolateyBeforeInstall.ps1 script
+  #   also remove it in the chocolateyAfterUninstall.ps1 script
+  Prefix = '$prefix'
+<%  } %>
+
+<%  if ($Installers.Count -gt 0 ) { %>
+  # ------- INSTALLERS ----------- #
+  Installers = `@(
+<%    Foreach ($Installer in $Installers) { %>
+<%      $LastInstaller = ($([array]::IndexOf($Installers, $Installer)) -eq ($($Installers.Count) - 1) ) %>
+    `@{
+      File = '<%= $($Installer.File) %>';
+<%      if ($Installer.Args.Count -gt 0 ) { %>
+      Args = `@(
+<%        Foreach ($Arg in $Installer.Args) { %>
+<%          $LastArg = ([array]::IndexOf($Installer.Args, $Arg) -eq ($Installer.Args.Count - 1) ) %>
+        '<%= $Arg %>'<% if (!$LastArg) { %>,
+
+<%                      } else { %>
+
+<%                      } %>
+<%        } %>
+      )
+<%      } %>
+    }<% if (!$LastInstaller) { %>;
+
+<%      } else { %>
+
+<%      } %>
+<%    } %>
+  )
+<%  } %>
+
+<%  if ($Uninstallers.Count -gt 0 ) { %>
+  # ------- UNINSTALLERS ----------- #
+  Uninstallers = `@(
+<%    Foreach ($Uninstaller in $Uninstallers) { %>
+<%      $LastUninstaller = ($([array]::IndexOf($Uninstallers, $Uninstaller)) -eq ($($Uninstallers.Count) - 1) ) %>
+    `@{
+      File = '<%= $($Uninstaller.File) %>';
+<%      if ($Uninstaller.Args.Count -gt 0 ) { %>
+      Args = `@(
+<%        Foreach ($Arg in $Uninstaller.Args) { %>
+<%          $LastArg = ([array]::IndexOf($Uninstaller.Args, $Arg) -eq ($Uninstaller.Args.Count - 1) ) %>
+        '<%= $Arg %>'<% if (!$LastArg) { %>,
+
+<%                      } else { %>
+
+<%                      } %>
+<%        } %>
+      )
+<%      } %>
+    }<% if (!$LastUninstaller) { %>;
+
+<%      } else { %>
+
+<%      } %>
+<%    } %>
+  )
+<%  } %>
+
+}

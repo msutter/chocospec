@@ -35,8 +35,5 @@ function Copy-ChocoToolsScripts
     $null = Copy-Item -Path "${FilesPath}\chocolateyInstall_ps1" `
         -Destination "${AbsToolsDirectory}\chocolateyInstall.ps1"
 
-    $null = Copy-Item -Path "${FilesPath}\chocolateyPkg_psd1" `
-        -Destination "${AbsToolsDirectory}\chocolateyPkg.psd1"
-
 }
 
