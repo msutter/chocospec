@@ -58,7 +58,7 @@ function New-ZipPartsFromFile
   $PsModulePath     = Split-Path  -Parent $FunctionsPath
   Write-Verbose "PsModulePath: ${PsModulePath}"
 
-  $DotNetZipDllPath = Join-Path $PsModulePath "Files\DotNetZip.1.9.3\lib\net20\Ionic.Zip.dll"
+  $DotNetZipDllPath = Join-Path $PsModulePath "assemblies\DotNetZip.1.9.3\lib\net20\Ionic.Zip.dll"
   Write-Verbose "DotNetZipDllPath: ${DotNetZipDllPath}"
 
   Write-Verbose "load dll at ${DotNetZipDllPath}"
