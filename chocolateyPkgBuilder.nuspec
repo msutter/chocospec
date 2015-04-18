@@ -11,6 +11,11 @@
     <description>Powershell Module providing Chocolatey Package Builder Functions</description>
     <copyright>Marc Sutter 2014</copyright>
     <tags>chocolateyPkgBuilder Chocolatey Powershell Module</tags>
+    <dependencies>
+      <dependency id="NuspecHelpers" />
+      <dependency id="Poweryaml" />
+      <dependency id="Eps" />
+    </dependencies>
   </metadata>
   <files>
     <file src="tools\**" target="tools" />
