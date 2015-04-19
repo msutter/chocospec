@@ -33,11 +33,11 @@ Param
   ## Nuspec params
 
   # Specifies the id
-  [Parameter(Mandatory = $false)]
+  [Parameter(Mandatory = $true)]
   [string] $id,
 
   # Specifies the version
-  [Parameter(Mandatory = $false)]
+  [Parameter(Mandatory = $true)]
   [string] $version,
 
   # Specifies the titleversion
@@ -45,7 +45,7 @@ Param
   [string] $title,
 
   # Specifies the authors
-  [Parameter(Mandatory = $false)]
+  [Parameter(Mandatory = $true)]
   [string[]] $authors,
 
   # Specifies the owners
@@ -53,7 +53,7 @@ Param
   [string[]] $owners,
 
   # Specifies the description
-  [Parameter(Mandatory = $false)]
+  [Parameter(Mandatory = $true)]
   [string] $description,
 
   # Specifies the releaseNotes
@@ -247,7 +247,7 @@ Param
     }
 
     # Generate the Choco Manifest
-    $null = New-ChocoManifest -OutputDirectory $ChocolateyToolsPath @ChocoParams -Verbose
+    $null = New-ChocoManifest -OutputDirectory $ChocolateyToolsPath @ChocoParams
 
     # Add Install/Uninstall custom scripts
     $scriptskeys = @(
@@ -259,7 +259,7 @@ Param
       'chocolateyAfterUninstall'
     )
 
-    $templateScripts = @(
+    $templateScriptsKeys = @(
       'chocolateyInstall',
       'chocolateyUninstall'
     )
@@ -272,7 +272,7 @@ Param
         "$(Get-Variable -Name $scriptKey)" | Out-File -filepath "${ChocolateyToolsPath}\${scriptKey}.ps1"
 
       } else {
-        if ($templateScripts -Contains $scriptKey) {
+        if ($templateScriptsKeys -Contains $scriptKey) {
           # if no install(uninstall) script given use the templates
           $null = Copy-Item -Path "${FilesPath}\${scriptKey}_ps1" `
             -Destination "${AbsToolsDirectory}\${scriptKey}.ps1"

@@ -32,7 +32,7 @@ Function New-Nupkg
             $AbsNuspecPath = Join-Path -Path (Get-Location) -ChildPath $NuspecPath
         }
 
-        & "${NugetCommand}" pack $AbsNuspecPath -BasePath $BasePath -OutputDirectory $OutputDirectory -NoPackageAnalysis 2>&1
+        & "${NugetCommand}" pack $AbsNuspecPath -BasePath $BasePath -OutputDirectory $OutputDirectory -NoPackageAnalysis
 
     } catch {
       Write-Error "$($_.Exception.Message)"
