@@ -1,7 +1,7 @@
 `@{
 
   # Package Id as specified in the nuspec file
-  PackageId = '$id'
+  PackageId = "${id}"
 
 <%  if ($Prefix) { %>
   # ------- FILES INSTALL -------- #
@@ -10,7 +10,7 @@
   # This path must exists !
   #   if not create it in the chocolateyBeforeInstall.ps1 script
   #   also remove it in the chocolateyAfterUninstall.ps1 script
-  Prefix = '$prefix'
+  Prefix = "${prefix}"
 <%  } %>
 
 <%  if ($Installers.Count -gt 0 ) { %>
