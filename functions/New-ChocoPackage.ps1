@@ -137,6 +137,9 @@ Param
 
   Process {
 
+    $MyModulePath = Split-Path -Parent $PSScriptRoot
+    Write-Verbose "MyModulePath: ${MyModulePath}"
+
     # Set outputdir absolute path
     if ([System.IO.Path]::IsPathRooted($OutputDirectory)) {
         $AbsOutputDirectory = $OutputDirectory
@@ -264,7 +267,7 @@ Param
       'chocolateyUninstall'
     )
 
-    $FilesPath = "$ModulePath/files"
+    $FilesPath = "$MyModulePath/files"
 
     foreach ($scriptKey in $scriptskeys) {
       if ($PSBoundParameters.ContainsKey($scriptKey)) {

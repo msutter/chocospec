@@ -85,8 +85,7 @@ Gets the chocospec
     # Check mandatory params
     foreach ($MandatoryKey in $MandatoryKeys) {
       if (!$chocospec.ContainsKey($MandatoryKey)) {
-        Write-Error "Mandatory parameter '${MandatoryKey}' not found in the chocospec file"
-        throw
+        Write-Warning "Mandatory parameter '${MandatoryKey}' not found in the chocospec file"
       }
     }
 

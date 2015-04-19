@@ -23,10 +23,10 @@ function Copy-ChocoToolsScripts
 
     Write-Verbose "AbsToolsDirectory: ${AbsToolsDirectory}"
 
-    $ModulePath = Split-Path -Parent $PSScriptRoot
+    $ChocoSpecModulePath = Split-Path -Parent $PSScriptRoot
     Write-Verbose "ModulePath: ${ModulePath}"
 
-    $FilesPath = "$ModulePath/files"
+    $FilesPath = "$ChocoSpecModulePath/files"
     Write-Verbose "FilesPath: ${FilesPath}"
 
     $null = Copy-Item -Path "${FilesPath}\chocolateyUninstall_ps1" `
