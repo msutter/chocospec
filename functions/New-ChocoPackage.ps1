@@ -205,6 +205,10 @@ Param
       $null = $NuspecParams.Add('tags', $tags -Join ' ')
     }
 
+    if (![string]::IsNullOrEmpty($dependencies)) {
+      $null = $NuspecParams.Add('dependencies', $dependencies)
+    }
+
     # Generate the Nuspec
     New-Nuspec -Path $NuspecPath @NuspecParams -Verbose
 
