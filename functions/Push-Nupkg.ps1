@@ -31,8 +31,8 @@ Function Push-Nupkg
         $AbsPath = Join-Path -Path (Get-Location) -ChildPath $Path
     }
 
-    $FileName      = (Get-Item $AbsPath).Name
-    $pushCmdOutput = & "$NugetCommand" push $AbsPath -Source $ServerUrl -ApiKey $ApiKey -Timeout $TimeOut 2>&1
+    $FileName = (Get-Item $AbsPath).Name
+    & "$NugetCommand" push $AbsPath -Source $ServerUrl -ApiKey $ApiKey -Timeout $TimeOut
 
     Write-Verbose -Message "Package '${FileName}' Successfully uploaded to '${ServerUrl}'"
 }
