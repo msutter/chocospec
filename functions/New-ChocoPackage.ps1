@@ -269,7 +269,7 @@ Param
     foreach ($scriptKey in $scriptskeys) {
       if ($PSBoundParameters.ContainsKey($scriptKey)) {
         Write-Verbose "${scriptKey}: ${ChocolateyToolsPath}\${scriptKey}.ps1"
-        "$(Get-Variable -Name $scriptKey)" | Out-File -filepath "${ChocolateyToolsPath}\${scriptKey}.ps1"
+        "$(Get-Variable -Name $scriptKey -valueOnly)" | Out-File -filepath "${ChocolateyToolsPath}\${scriptKey}.ps1"
 
       } else {
         if ($templateScriptsKeys -Contains $scriptKey) {
