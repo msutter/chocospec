@@ -27,9 +27,15 @@ Param
   # Specifies the location of build
   [ValidateScript( { Test-Path($_) -PathType Container } )]
   [Parameter(Mandatory = $false )]
-  [string]$BuildDirectory = (New-TempDirectory)
+  [string]$BuildDirectory = (New-TempDirectory),
 
+  # If specified. Overrides the httprepo host Value
+  # Usefull for CICD jobs on different envirements
+  [Parameter(Mandatory = $false)]
+  [string]$HttpRepoOverride
 )
+
+  $ModulePath = Split-Path -Parent $PSScriptRoot
 
   # Set chocospec absolute path
   if ([System.IO.Path]::IsPathRooted($Chocospec)) {
@@ -122,10 +128,10 @@ Param
   New-Nuspec -Path $NuspecPath @NuspecParams -Verbose
 
   #############################################################
-  # Choco Install/Uninstall Scripts Generation
+  # Package Choco Tools
   #############################################################
 
-  $ChocolateyToolsDirectoryName = 'chocolateyTools'
+  $ChocolateyToolsDirectoryName = 'CHOCO_TOOLS'
   $ChocolateyToolsPath = Join-Path $AbsBuildDirectory $ChocolateyToolsDirectoryName
 
   # Clean
@@ -158,6 +164,40 @@ Param
   # Generate the Choco Manifest
   $null = New-ChocoManifest -OutputDirectory $ChocolateyToolsPath @ChocoParams -Verbose
 
+  # Add Install/Uninstall custom scripts
+  $scriptskeys = @(
+    'chocolateyInstall',
+    'chocolateyUninstall',
+    'chocolateyBeforeInstall',
+    'chocolateyAfterInstall',
+    'chocolateyBeforeUninstall',
+    'chocolateyAfterUninstall'
+  )
+
+  $templateScripts = @(
+    'chocolateyInstall',
+    'chocolateyUninstall'
+  )
+
+  $FilesPath = "$ModulePath/files"
+
+  foreach ($scriptKey in $scriptskeys) {
+    if ($chocospec.ContainsKey($scriptKey)) {
+
+      Write-Verbose "${scriptKey}: ${ChocolateyToolsPath}\${scriptKey}.ps1"
+      "$($chocospec.$scriptKey)" | Out-File -filepath "${ChocolateyToolsPath}\${scriptKey}.ps1"
+
+    } else {
+
+      if ($templateScripts -Contains $scriptKey) {
+        # if no install(uninstall) script given use the templates
+        $null = Copy-Item -Path "${FilesPath}\${scriptKey}_ps1" `
+          -Destination "${AbsToolsDirectory}\${scriptKey}.ps1"
+      }
+
+    }
+  }
+
   # Update nuspec for chocolatey tools folder
   $ChocoToolsfiles = @(
     @{
@@ -169,30 +209,71 @@ Param
   Update-Nuspec -Path $NuspecPath -files $ChocoToolsfiles
 
   #############################################################
-  # Package Root Generation
+  # Package Sources
   #############################################################
 
-  $PackageRootDirectoryName = 'packageRoot'
+  $PackageSourcesDirectoryName = 'SOURCES'
+  $PackageSourcesPath = Join-Path $AbsBuildDirectory $PackageSourcesDirectoryName
+
+  if (Test-Path $PackageSourcesPath) {
+    $null = Remove-Item -Force -Recurse $PackageSourcesPath
+  }
+
+  $null = New-Item -ItemType Directory -Path $PackageSourcesPath
+
+  # Get sources
+  if ($chocospec.sources) {
+    foreach ($source in $chocospec.sources) {
+      switch ($source.type)
+      {
+        httprepo {
+          if ($PSBoundParameters.ContainsKey('HttpRepoOverride')) {
+            $HttpRepoHost = $HttpRepoOverride
+          } else {
+            $HttpRepoHost = $source.host
+          }
+          $Filename = $source.path.split('/')[-1]
+          $FilePath = Join-Path $PackageSourcesPath $Filename
+          $FullUrl = "${HttpRepoHost}/$($source.path)"
+          Write-Verbose "Downloading ${Filename} from ${HttpRepoHost}"
+          $webclient = New-Object System.Net.WebClient
+          $webclient.DownloadFile($FullUrl, $FilePath)
+        }
+        git {
+          # TODO
+        }
+        local {
+          # TODO
+        }
+      }
+    }
+  }
+
+  #############################################################
+  # Package Root
+  #############################################################
+
+  $PackageRootDirectoryName = 'ROOT'
   $PackageRootPath = Join-Path $AbsBuildDirectory $PackageRootDirectoryName
+
+  $SetupScriptFileName = 'chocolateySetup.ps1'
+  $SetupScriptFilePath = Join-Path $AbsBuildDirectory $SetupScriptFileName
 
   if (Test-Path $PackageRootPath) {
     $null = Remove-Item -Force -Recurse $PackageRootPath
   }
-
   $null = New-Item -ItemType Directory -Path $PackageRootPath
 
-  # Add sources to packageRoot
-  if ($chocospec.sources) {
-    foreach ($source in $chocospec.sources) {
-      $Filename = $source.url.split('/')[-1]
-      $FilePath = Join-Path $PackageRootPath $Filename
-
-      Write-Verbose "Downloading ${Filename} from $($source.url)"
-
-      $webclient = New-Object System.Net.WebClient
-      $webclient.DownloadFile($source.url, $FilePath)
-    }
+  if ($chocospec.setup) {
+    Write-Verbose 'Executing setup:'
+    Write-Verbose "$($chocospec.setup)"
+    "$($chocospec.setup)" | Out-File -filepath $SetupScriptFilePath
+  } else {
+    Write-Verbose 'Executing default setup'
+    "`$null = Copy-Item `$PackageSourcesPath/** `$PackageRootPath" | Out-File -filepath $SetupScriptFilePath
   }
+  Write-Verbose "SetupScriptFilePath: ${SetupScriptFilePath}"
+  $null = & "${SetupScriptFilePath}"
 
   # Update nuspec for chocolatey tools folder
   $PackageRootfiles = @(
