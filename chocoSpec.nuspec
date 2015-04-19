@@ -2,15 +2,15 @@
 <!-- this file was automatically generated with the scPackageTools Powershell module -->
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>chocolateyPkgBuilder</id>
+    <id>chocoSpec</id>
     <version>1.0.0</version>
     <authors>Marc Sutter</authors>
     <owners></owners>
-    <projectUrl>https://gitlab.swisscloud.io/powershell/chocolateyPkgBuilder</projectUrl>
+    <projectUrl>https://gitlab.swisscloud.io/powershell/chocoSpec</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Powershell Module providing Chocolatey Package Builder Functions</description>
     <copyright>Marc Sutter 2014</copyright>
-    <tags>chocolateyPkgBuilder Chocolatey Powershell Module</tags>
+    <tags>chocoSpec Chocolatey Powershell Module</tags>
     <dependencies>
       <dependency id="NuspecHelpers" />
       <dependency id="Poweryaml" />

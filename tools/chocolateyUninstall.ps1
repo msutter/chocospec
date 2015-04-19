@@ -1,5 +1,5 @@
-$packageName = "chocolateyPkgBuilder"
-$moduleName = "chocolateyPkgBuilder"
+$packageName = "chocoSpec"
+$moduleName = "chocoSpec"
 
 try {
   $installPath = Join-Path $PSHome  "Modules\$modulename"
