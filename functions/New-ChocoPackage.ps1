@@ -227,9 +227,8 @@ Param
       $null = Remove-Item -Force -Recurse $ChocolateyToolsPath
     }
 
+    # Make tools directory
     $null = New-Item -ItemType Directory -Path $ChocolateyToolsPath
-
-    $null = Copy-ChocoToolsScripts -ToolsDirectory $ChocolateyToolsPath
 
     # Choco Manifest Generation
 
@@ -275,10 +274,9 @@ Param
         "$(Get-Variable -Name $scriptKey -valueOnly)" | Out-File -filepath "${ChocolateyToolsPath}\${scriptKey}.ps1"
 
       } else {
-        if ($templateScriptsKeys -Contains $scriptKey) {
+        if ($templateScriptsKeys.Contains($scriptKey)) {
           # if no install(uninstall) script given use the templates
-          $null = Copy-Item -Path "${FilesPath}\${scriptKey}_ps1" `
-            -Destination "${AbsToolsDirectory}\${scriptKey}.ps1"
+          $null = Copy-ChocoToolsScripts -ToolsDirectory $ChocolateyToolsPath -ScriptKeys $scriptKey
         }
       }
     }

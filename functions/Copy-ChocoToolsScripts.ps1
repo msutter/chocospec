@@ -12,7 +12,10 @@ function Copy-ChocoToolsScripts
         # Specifies the nuspec files to update
         [ValidateScript( { Test-Path($_) } )]
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true )]
-        $ToolsDirectory = './tools'
+        $ToolsDirectory = './tools',
+
+        [Parameter(Mandatory = $false)]
+        [string[]]$ScriptKeys = @('chocolateyInstall','chocolateyUninstall')
     )
 
     if ([System.IO.Path]::IsPathRooted($ToolsDirectory)) {
@@ -23,17 +26,21 @@ function Copy-ChocoToolsScripts
 
     Write-Verbose "AbsToolsDirectory: ${AbsToolsDirectory}"
 
-    $ChocoSpecModulePath = Split-Path -Parent $PSScriptRoot
+    $ModulePath = Split-Path -Parent $PSScriptRoot
     Write-Verbose "ModulePath: ${ModulePath}"
 
-    $FilesPath = "$ChocoSpecModulePath/files"
+    $FilesPath = "$ModulePath/files"
     Write-Verbose "FilesPath: ${FilesPath}"
 
-    $null = Copy-Item -Path "${FilesPath}\chocolateyUninstall_ps1" `
-        -Destination "${AbsToolsDirectory}\chocolateyUninstall.ps1"
+    if ($scriptKeys.Contains('chocolateyInstall')) {
+        $null = Copy-Item -Path "${FilesPath}\chocoSpecInstall.ps1" `
+            -Destination "${AbsToolsDirectory}\chocolateyInstall.ps1"
+    }
 
-    $null = Copy-Item -Path "${FilesPath}\chocolateyInstall_ps1" `
-        -Destination "${AbsToolsDirectory}\chocolateyInstall.ps1"
+    if ($scriptKeys.Contains('chocolateyUninstall')) {
+        $null = Copy-Item -Path "${FilesPath}\chocoSpecUninstall.ps1" `
+            -Destination "${AbsToolsDirectory}\chocolateyUninstall.ps1"
+    }
 
 }
 
