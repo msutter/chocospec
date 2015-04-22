@@ -328,7 +328,7 @@ Param
           }
           git {
             Write-Verbose "Cloning $($source.url) into ${PackageSourcesPath}"
-            $null = & "${GitCommand}" clone $source.url "${PackageSourcesPath}" 2>&1
+            & "${GitCommand}" clone $source.url "${PackageSourcesPath}" 2>&1
           }
           local {
             Write-Verbose "Copying $($source.path) into ${PackageSourcesPath}"
