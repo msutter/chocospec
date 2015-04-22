@@ -46,6 +46,7 @@ Gets the chocospec
       'description',
       'tags',
       'dependencies',
+      'copyright',
       'releaseNotes',
       'sources',
       'setup',

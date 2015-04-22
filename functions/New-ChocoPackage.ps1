@@ -30,6 +30,10 @@ Param
   [Parameter(Mandatory = $false)]
   [string]$HttpRepoOverride,
 
+  # Git command
+  [Parameter(Mandatory = $false)]
+  [string]$GitCommand = 'C:\Program Files (x86)\Git\bin\git.exe',
+
   ## Nuspec params
 
   # Specifies the id
@@ -323,10 +327,12 @@ Param
             $webclient.DownloadFile($FullUrl, $FilePath)
           }
           git {
-            # TODO
+            Write-Verbose "Cloning $($source.url) into ${PackageSourcesPath}"
+            $null = & "${GitCommand}" clone $source.url "${PackageSourcesPath}" 2>&1
           }
           local {
-            # TODO
+            Write-Verbose "Copying $($source.path) into ${PackageSourcesPath}"
+            $null = robocopy /e "$($source.path)" "${PackageSourcesPath}"
           }
         }
       }
@@ -353,7 +359,7 @@ Param
       "$($setup)" | Out-File -filepath $SetupScriptFilePath
     } else {
       Write-Verbose 'Executing default setup'
-      "`$null = Copy-Item `$PackageSourcesPath/** `$PackageRootPath" | Out-File -filepath $SetupScriptFilePath
+      "`$null = robocopy /e `"`${PackageSourcesPath}`" `"`${PackageRootPath}`"" | Out-File -filepath $SetupScriptFilePath
     }
     Write-Verbose "SetupScriptFilePath: ${SetupScriptFilePath}"
     $null = & "${SetupScriptFilePath}"
