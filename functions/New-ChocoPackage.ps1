@@ -332,7 +332,7 @@ Param
           }
           local {
             Write-Verbose "Copying $($source.path) into ${PackageSourcesPath}"
-            $null = robocopy /e "$($source.path)" "${PackageSourcesPath}"
+            $null = Copy-Item -Force "$($source.path)/*" "${PackageSourcesPath}"
           }
         }
       }
