@@ -359,7 +359,8 @@ Param
       "$($setup)" | Out-File -filepath $SetupScriptFilePath
     } else {
       Write-Verbose 'Executing default setup'
-      "`$null = robocopy /e `"`${PackageSourcesPath}`" `"`${PackageRootPath}`"" | Out-File -filepath $SetupScriptFilePath
+      "`$null = Copy-Item -Force -Recurse -Exclude .git `"`${PackageSourcesPath}\*`" `"`${PackageRootPath}`"" | Out-File -filepath $SetupScriptFilePath
+      Write-Verbose (Get-Content $SetupScriptFilePath)
     }
     Write-Verbose "SetupScriptFilePath: ${SetupScriptFilePath}"
     $null = & "${SetupScriptFilePath}"
