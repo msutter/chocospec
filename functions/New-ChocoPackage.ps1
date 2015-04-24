@@ -23,7 +23,7 @@ Param
   # Specifies the location of build
   [ValidateScript( { Test-Path($_) -PathType Container } )]
   [Parameter(Mandatory = $false )]
-  [string]$BuildDirectory = (New-TempDirectory),
+  [string]$BuildSpace = (New-TempDirectory),
 
   # If specified. Overrides the httprepo host Value
   # Usefull for CICD jobs on different envirements
@@ -139,6 +139,8 @@ Param
   [hashtable[]] $uninstallers
 )
 
+  Begin {}
+
   Process {
 
     $MyModulePath = Split-Path -Parent $PSScriptRoot
@@ -152,10 +154,19 @@ Param
     }
 
     # Set build absolute path
-    if ([System.IO.Path]::IsPathRooted($BuildDirectory)) {
-        $AbsBuildDirectory = $BuildDirectory
+    if ([System.IO.Path]::IsPathRooted($BuildSpace)) {
+        $AbsBuildSpace = $BuildSpace
     } else {
-        $AbsBuildDirectory = Join-Path (Get-Location) $BuildDirectory
+        $AbsBuildSpace = Join-Path (Get-Location) $BuildSpace
+    }
+
+    ###################### Build Environment dirs ######################
+
+    $ChocoSpecBuildVars = New-ChocoSpecBuildEnvironment $AbsBuildSpace -PackageId $id
+
+    # Create variables as contained the Pathes in scriptKey
+    foreach ($NewVar in $ChocoSpecBuildVars.Keys) {
+      New-Variable -Name $NewVar -Value $ChocoSpecBuildVars.$NewVar
     }
 
     ###################### Nuspec Generation ######################
@@ -163,7 +174,7 @@ Param
     $NuspecFileName = $id + ".nuspec"
     Write-Verbose "NuspecFileName: ${NuspecFileName}"
 
-    $NuspecPath = Join-Path $AbsBuildDirectory $NuspecFileName
+    $NuspecPath = Join-Path $SpecsPath $NuspecFileName
 
     $NuspecParams = @{}
 
@@ -223,21 +234,7 @@ Param
     # Package Choco Tools
     #############################################################
 
-    $ChocolateyToolsDirectoryName = 'CHOCO_TOOLS'
-    $ChocolateyToolsPath = Join-Path $AbsBuildDirectory $ChocolateyToolsDirectoryName
-
-    # Clean
-    if (Test-Path $ChocolateyToolsPath) {
-      $null = Remove-Item -Force -Recurse $ChocolateyToolsPath
-    }
-
-    # Make tools directory
-    $null = New-Item -ItemType Directory -Path $ChocolateyToolsPath
-
     # Choco Manifest Generation
-
-    $NuspecPath = Join-Path $AbsBuildDirectory $NuspecFileName
-
     $ChocoParams = @{}
 
     $null = $ChocoParams.Add('Id', $id)
@@ -253,7 +250,7 @@ Param
     }
 
     # Generate the Choco Manifest
-    $null = New-ChocoManifest -OutputDirectory $ChocolateyToolsPath @ChocoParams
+    $null = New-ChocoManifest -OutputDirectory $PackageToolsPath @ChocoParams
 
     # Add Install/Uninstall custom scripts
     $scriptskeys = @(
@@ -274,13 +271,13 @@ Param
 
     foreach ($scriptKey in $scriptskeys) {
       if ($PSBoundParameters.ContainsKey($scriptKey)) {
-        Write-Verbose "${scriptKey}: ${ChocolateyToolsPath}\${scriptKey}.ps1"
-        "$(Get-Variable -Name $scriptKey -valueOnly)" | Out-File -filepath "${ChocolateyToolsPath}\${scriptKey}.ps1"
+        Write-Verbose "${scriptKey}: ${PackageToolsPath}\${scriptKey}.ps1"
+        "$(Get-Variable -Name $scriptKey -valueOnly)" | Out-File -filepath "${PackageToolsPath}\${scriptKey}.ps1"
 
       } else {
         if ($templateScriptsKeys.Contains($scriptKey)) {
           # if no install(uninstall) script given use the templates
-          $null = Copy-ChocoToolsScripts -ToolsDirectory $ChocolateyToolsPath -ScriptKeys $scriptKey
+          $null = Copy-ChocoToolsScripts -ToolsDirectory $PackageToolsPath -ScriptKeys $scriptKey
         }
       }
     }
@@ -288,7 +285,7 @@ Param
     # Update nuspec for chocolatey tools folder
     $ChocoToolsfiles = @(
       @{
-        src = "${ChocolateyToolsDirectoryName}\**";
+        src = "${ToolsDirectoryName}\**";
         target = 'tools'
       }
     )
@@ -299,20 +296,12 @@ Param
     # Package Sources
     #############################################################
 
-    $PackageSourcesDirectoryName = 'SOURCES'
-    $PackageSourcesPath = Join-Path $AbsBuildDirectory $PackageSourcesDirectoryName
-
-    if (Test-Path $PackageSourcesPath) {
-      $null = Remove-Item -Force -Recurse $PackageSourcesPath
-    }
-
-    $null = New-Item -ItemType Directory -Path $PackageSourcesPath
-
     # Get sources
     if ($sources) {
       foreach ($source in $sources) {
         switch ($source.type)
         {
+
           httprepo {
             if ($PSBoundParameters.ContainsKey('HttpRepoOverride')) {
               $HttpRepoHost = $HttpRepoOverride
@@ -326,10 +315,12 @@ Param
             $webclient = New-Object System.Net.WebClient
             $webclient.DownloadFile($FullUrl, $FilePath)
           }
+
           git {
             Write-Verbose "Cloning $($source.url) into ${PackageSourcesPath}"
             $null = & "${GitCommand}" clone $source.url "${PackageSourcesPath}" 2>&1
           }
+
           local {
             Write-Verbose "Copying $($source.path) into ${PackageSourcesPath}"
             $null = Copy-Item -Force "$($source.path)/*" "${PackageSourcesPath}"
@@ -342,16 +333,13 @@ Param
     # Package Root
     #############################################################
 
-    $PackageRootDirectoryName = 'ROOT'
-    $PackageRootPath = Join-Path $AbsBuildDirectory $PackageRootDirectoryName
-
     $SetupScriptFileName = 'chocolateySetup.ps1'
-    $SetupScriptFilePath = Join-Path $AbsBuildDirectory $SetupScriptFileName
+    $SetupScriptFilePath = Join-Path $PackageBuildPath $SetupScriptFileName
 
-    if (Test-Path $PackageRootPath) {
-      $null = Remove-Item -Force -Recurse $PackageRootPath
-    }
-    $null = New-Item -ItemType Directory -Path $PackageRootPath
+    # if (Test-Path $PackageRootPath) {
+    #   $null = Remove-Item -Force -Recurse $PackageRootPath
+    # }
+    # $null = New-Item -ItemType Directory -Path $PackageRootPath
 
     if ($setup) {
       Write-Verbose 'Executing setup:'
@@ -368,7 +356,7 @@ Param
     # Update nuspec for chocolatey tools folder
     $PackageRootfiles = @(
       @{
-        src = "${PackageRootDirectoryName}\**";
+        src = "${RootDirectoryName}\**";
         target = 'files'
       }
     )
@@ -378,15 +366,16 @@ Param
     #############################################################
     # Generate the package
     #############################################################
-    New-NuPkg -NuspecPath $NuspecPath -BasePath $AbsBuildDirectory -OutputDirectory $OutputDirectory -Verbose
+    New-NuPkg -NuspecPath $NuspecPath -BasePath $PackageBuildPath -OutputDirectory $NupkgsPath -Verbose
+    $null = Copy-Item $NupkgsPath/*.nupkg $AbsOutputDirectory
 
     #############################################################
     # Clean the temp build directory
     #############################################################
 
-    if (!$PSBoundParameters.ContainsKey('BuildDirectory')) {
-      Write-Verbose "Removing Temporary BuildDirectory: ${AbsBuildDirectory}"
-      Remove-Item -Force -Recurse $AbsBuildDirectory
+    if (!$PSBoundParameters.ContainsKey('BuildSpace')) {
+      Write-Verbose "Removing Temporary BuildSpace: ${AbsBuildSpace}"
+      Remove-Item -Force -Recurse $AbsBuildSpace
     }
 
   }
