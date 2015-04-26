@@ -71,28 +71,34 @@ function New-ChocoSpecBuildEnvironment {
       }
 
       $ToolsDirectoryName = 'TOOLS'
-      $RootDirectoryName  = 'ROOT'
+      $FilesDirectoryName = 'FILES'
 
       $PackageBuildDirectoryNames = @{
         ToolsDirectoryName   = $ToolsDirectoryName;
-        RootDirectoryName    = $RootDirectoryName;
+        FilesDirectoryName   = $FilesDirectoryName;
         PackageDirectoryName = $PackageDirectoryName
       }
 
-      $PackageScriptsPath   = Join-Path $ScriptsPath $PackageDirectoryName
-      $PackageSourcesPath   = Join-Path $SourcesPath $PackageDirectoryName
-      $PackageBuildPath     = Join-Path $BuildPath $PackageDirectoryName
-      $PackageBuildRootPath = Join-Path $BuildRootPath $PackageDirectoryName
-      $PackageRootPath      = Join-Path $PackageBuildRootPath $RootDirectoryName
-      $PackageToolsPath     = Join-Path $PackageBuildRootPath $ToolsDirectoryName
+      $PackageScriptsPath        = Join-Path $ScriptsPath $PackageDirectoryName
+      $PackageSourcesPath        = Join-Path $SourcesPath $PackageDirectoryName
+
+      $PackageBuildPath          = Join-Path $BuildPath $PackageDirectoryName
+      # $PackageBuildFilesPath     = Join-Path $PackageBuildPath $FilesDirectoryName
+      # $PackageBuildToolsPath     = Join-Path $PackageBuildPath $ToolsDirectoryName
+
+      $PackageBuildRootPath      = Join-Path $BuildRootPath $PackageDirectoryName
+      $PackageBuildRootFilesPath = Join-Path $PackageBuildRootPath $FilesDirectoryName
+      $PackageBuildRootToolsPath = Join-Path $PackageBuildRootPath $ToolsDirectoryName
 
       $PackageBuildPathes = @{
-        PackageScriptsPath   = $PackageScriptsPath;
-        PackageSourcesPath   = $PackageSourcesPath;
-        PackageBuildPath     = $PackageBuildPath;
-        PackageBuildRootPath = $PackageBuildRootPath;
-        PackageToolsPath     = $PackageToolsPath;
-        PackageRootPath      = $PackageRootPath
+        PackageScriptsPath        = $PackageScriptsPath;
+        PackageSourcesPath        = $PackageSourcesPath;
+        PackageBuildPath          = $PackageBuildPath;
+        # PackageBuildToolsPath     = $PackageBuildToolsPath;
+        # PackageBuildFilesPath     = $PackageBuildFilesPath
+        PackageBuildRootPath      = $PackageBuildRootPath;
+        PackageBuildRootToolsPath = $PackageBuildRootToolsPath;
+        PackageBuildRootFilesPath = $PackageBuildRootFilesPath
       }
 
       $PackageBuildPathArray = $PackageBuildPathes.Values | Sort

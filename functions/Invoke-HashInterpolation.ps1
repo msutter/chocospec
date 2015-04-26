@@ -37,7 +37,13 @@ function Invoke-HashInterpolation {
 
     # Force Interpolation of yaml values form local scope
     foreach ($Key in $Hash.Keys ) {
-      if (!$ExcludeKeys.Contains($key)) {
+      if ($ExcludeKeys.Contains($key)) {
+
+        # Add excluded keys as is
+        $Result.Add($Key, $Hash.$Key)
+
+      } else {
+
         if ($Hash.$Key -is [string]) {
           Write-Verbose "${Key} is a string"
           $Result.Add($Key, $ExecutionContext.InvokeCommand.ExpandString($Hash.$Key))
@@ -52,6 +58,7 @@ function Invoke-HashInterpolation {
           Write-Verbose "${Key} is an hashtable"
           $Result.Add($Key, (Invoke-HashInterpolation $Hash.$Key))
         }
+
       }
     }
 

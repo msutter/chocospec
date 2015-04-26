@@ -109,7 +109,19 @@ Param
   [hashtable[]] $sources,
 
   [Parameter(Mandatory = $false)]
-  [string] $setup,
+  [string] $prep,
+
+  [Parameter(Mandatory = $false)]
+  [string] $build,
+
+  [Parameter(Mandatory = $false)]
+  [string] $install,
+
+  [Parameter(Mandatory = $false)]
+  [string] $check,
+
+  [Parameter(Mandatory = $false)]
+  [string] $clean,
 
   [Parameter(Mandatory = $false)]
   [string] $prefix,
@@ -253,7 +265,7 @@ Param
     }
 
     # Generate the Choco Manifest
-    $null = New-ChocoManifest -OutputDirectory $PackageToolsPath @ChocoParams
+    $null = New-ChocoManifest -OutputDirectory $PackageBuildRootToolsPath @ChocoParams
 
     # Add Install/Uninstall custom scripts
     $scriptskeys = @(
@@ -274,13 +286,13 @@ Param
 
     foreach ($scriptKey in $scriptskeys) {
       if ($PSBoundParameters.ContainsKey($scriptKey)) {
-        Write-Verbose "${scriptKey}: ${PackageToolsPath}\${scriptKey}.ps1"
-        "$(Get-Variable -Name $scriptKey -valueOnly)" | Out-File -filepath "${PackageToolsPath}\${scriptKey}.ps1"
+        Write-Warning "${scriptKey}: ${PackageBuildRootToolsPath}\${scriptKey}.ps1"
+        "$(Get-Variable -Name $scriptKey -valueOnly)" | Out-File -filepath "${PackageBuildRootToolsPath}\${scriptKey}.ps1"
 
       } else {
         if ($templateScriptsKeys.Contains($scriptKey)) {
           # if no install(uninstall) script given use the templates
-          $null = Copy-ChocoToolsScripts -ToolsDirectory $PackageToolsPath -ScriptKeys $scriptKey
+          $null = Copy-ChocoToolsScripts -ToolsDirectory $PackageBuildRootToolsPath -ScriptKeys $scriptKey
         }
       }
     }
@@ -298,7 +310,7 @@ Param
     # Update nuspec for chocolatey files folder
     $PackageRootfiles = @(
       @{
-        src = "${RootDirectoryName}\**";
+        src = "${FilesDirectoryName}\**";
         target = 'files'
       }
     )
@@ -321,12 +333,13 @@ Param
             } else {
               $HttpRepoHost = $source.host
             }
-            $Filename = $source.path.split('/')[-1]
+            $Filename = $source.file
             $FilePath = Join-Path $PackageSourcesPath $Filename
-            $FullUrl = "${HttpRepoHost}/$($source.path)"
+
+            $FullUrl  = "${HttpRepoHost}/$($source.path)"
+
             Write-Verbose "Downloading ${Filename} from ${HttpRepoHost}"
-            $webclient = New-Object System.Net.WebClient
-            $webclient.DownloadFile($FullUrl, $FilePath)
+            Invoke-WebRequest -Uri $FullUrl -OutFile $FilePath
           }
 
           git {

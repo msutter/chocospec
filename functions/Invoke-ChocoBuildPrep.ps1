@@ -40,15 +40,16 @@ See the %prep section below for more.
     [System.Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem") | Out-Null
     $Archive = Get-ChildItem -Filter *.zip $PackageSourcesPath
     $ArchivePath = $Archive.FullName
+    Write-Verbose "ArchivePath: ${ArchivePath}"
 
     if ($C) {
       # Create the directory and unpack in it
       $null = New-Item -Force -ItemType Directory $PackageBuildPath
       $null = [System.IO.Compression.ZipFile]::ExtractToDirectory($ArchivePath, $PackageBuildPath)
 
-    } elseIf ($PSBoundParameters.Contains('N')) {
+    } elseIf ($PSBoundParameters.ContainsKey('N')) {
 
-      $null = [System.IO.Compression.ZipFile]::ExtractToDirectory($ArchivePath, $BuildPath)
+      [System.IO.Compression.ZipFile]::ExtractToDirectory($ArchivePath, $BuildPath)
       Rename-Item (Join-Path $BuildPath $N) $PackageBuildPath
 
     } else {
