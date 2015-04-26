@@ -163,8 +163,9 @@ Param
     ###################### Build Environment dirs ######################
 
     $chocoBuildPathes = New-ChocoSpecBuildEnvironment `
-      -Path       $AbsBuildSpace `
-      -PackageId  $id
+      -Path           $AbsBuildSpace `
+      -PackageId      $id `
+      -PackageVersion $version
 
     # Create variables as contained the Pathes in scriptKey
     foreach ($NewVar in $chocoBuildPathes.Keys) {

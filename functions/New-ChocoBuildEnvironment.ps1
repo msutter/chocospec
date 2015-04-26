@@ -17,6 +17,10 @@ function New-ChocoSpecBuildEnvironment {
         [Parameter(Mandatory = $false)]
         [string]$PackageID,
 
+        # PackageId
+        [Parameter(Mandatory = $false)]
+        [string]$PackageVersion,
+
         # Clean if exists
         [Parameter(Mandatory = $false)]
         [switch]$Clean
@@ -60,6 +64,12 @@ function New-ChocoSpecBuildEnvironment {
 
     if ($PSBoundParameters.ContainsKey('PackageID')) {
 
+      if ($PSBoundParameters.ContainsKey('PackageVersion')) {
+        $PackageDirectoryName = "${PackageID}-${PackageVersion}"
+      } else {
+        $PackageDirectoryName = "${PackageID}"
+      }
+
       $ToolsDirectoryName = 'TOOLS'
       $RootDirectoryName  = 'ROOT'
 
@@ -68,10 +78,10 @@ function New-ChocoSpecBuildEnvironment {
         RootDirectoryName  = $RootDirectoryName;
       }
 
-      $PackageScriptsPath   = Join-Path $ScriptsPath $PackageID
-      $PackageSourcesPath   = Join-Path $SourcesPath $PackageID
-      $PackageBuildPath     = Join-Path $BuildPath $PackageID
-      $PackageBuildRootPath = Join-Path $BuildRootPath $PackageID
+      $PackageScriptsPath   = Join-Path $ScriptsPath $PackageDirectoryName
+      $PackageSourcesPath   = Join-Path $SourcesPath $PackageDirectoryName
+      $PackageBuildPath     = Join-Path $BuildPath $PackageDirectoryName
+      $PackageBuildRootPath = Join-Path $BuildRootPath $PackageDirectoryName
       $PackageRootPath      = Join-Path $PackageBuildRootPath $RootDirectoryName
       $PackageToolsPath     = Join-Path $PackageBuildRootPath $ToolsDirectoryName
 

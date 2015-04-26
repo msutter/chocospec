@@ -17,17 +17,5 @@ See the %prep section below for more.
     [string] $MapName
   )
 
-  $DefaultPrep = 
 
 }
-
-
-The "%autosetup" command unpacks a source package. Switches include:
-
--n name : If the Source tarball unpacks into a directory whose name is not the RPM name,
-this switch can be used to specify the correct directory name.
-For example, if the tarball unpacks into the directory FOO, use "%autosetup -n FOO".
-
--c name : If the Source tarball unpacks into multiple directories instead of a single directory,
-this switch can be used to create a directory named name and then unpack into it.
-
