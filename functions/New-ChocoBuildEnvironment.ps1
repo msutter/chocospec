@@ -74,8 +74,9 @@ function New-ChocoSpecBuildEnvironment {
       $RootDirectoryName  = 'ROOT'
 
       $PackageBuildDirectoryNames = @{
-        ToolsDirectoryName = $ToolsDirectoryName;
-        RootDirectoryName  = $RootDirectoryName;
+        ToolsDirectoryName   = $ToolsDirectoryName;
+        RootDirectoryName    = $RootDirectoryName;
+        PackageDirectoryName = $PackageDirectoryName
       }
 
       $PackageScriptsPath   = Join-Path $ScriptsPath $PackageDirectoryName
