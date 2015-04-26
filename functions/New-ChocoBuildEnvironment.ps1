@@ -31,16 +31,20 @@ function New-ChocoSpecBuildEnvironment {
 
     # Environment specific
 
-    $SpecsPath   = Join-Path $AbsPath 'SPECS'
-    $SourcesPath = Join-Path $AbsPath 'SOURCES'
-    $BuildPath   = Join-Path $AbsPath 'BUILD'
-    $NupkgsPath  = Join-Path $AbsPath 'NUPKGS'
+    $ScriptsPath   = Join-Path $AbsPath 'SCRIPTS'
+    $SpecsPath     = Join-Path $AbsPath 'SPECS'
+    $SourcesPath   = Join-Path $AbsPath 'SOURCES'
+    $BuildPath     = Join-Path $AbsPath 'BUILD'
+    $BuildRootPath = Join-Path $AbsPath 'BUILDROOT'
+    $NupkgsPath    = Join-Path $AbsPath 'NUPKGS'
 
     $BuildPathes = @{
-      SpecsPath   = $SpecsPath;
-      SourcesPath = $SourcesPath;
-      BuildPath   = $BuildPath;
-      NupkgsPath  = $NupkgsPath
+      ScriptsPath   = $ScriptsPath;
+      SpecsPath     = $SpecsPath;
+      SourcesPath   = $SourcesPath;
+      BuildPath     = $BuildPath;
+      BuildRootPath = $BuildRootPath;
+      NupkgsPath    = $NupkgsPath
     }
 
     $BuildPathArray = $BuildPathes.Values | Sort
@@ -64,16 +68,20 @@ function New-ChocoSpecBuildEnvironment {
         RootDirectoryName  = $RootDirectoryName;
       }
 
-      $PackageSourcesPath = Join-Path $SourcesPath $PackageID
-      $PackageBuildPath   = Join-Path $BuildPath $PackageID
-      $PackageToolsPath   = Join-Path $PackageBuildPath $ToolsDirectoryName
-      $PackageRootPath    = Join-Path $PackageBuildPath $RootDirectoryName
+      $PackageScriptsPath   = Join-Path $ScriptsPath $PackageID
+      $PackageSourcesPath   = Join-Path $SourcesPath $PackageID
+      $PackageBuildPath     = Join-Path $BuildPath $PackageID
+      $PackageBuildRootPath = Join-Path $BuildRootPath $PackageID
+      $PackageRootPath      = Join-Path $PackageBuildRootPath $RootDirectoryName
+      $PackageToolsPath     = Join-Path $PackageBuildRootPath $ToolsDirectoryName
 
       $PackageBuildPathes = @{
-        PackageSourcesPath = $PackageSourcesPath;
-        PackageBuildPath   = $PackageBuildPath;
-        PackageToolsPath   = $PackageToolsPath;
-        PackageRootPath    = $PackageRootPath
+        PackageScriptsPath   = $PackageScriptsPath;
+        PackageSourcesPath   = $PackageSourcesPath;
+        PackageBuildPath     = $PackageBuildPath;
+        PackageBuildRootPath = $PackageBuildRootPath;
+        PackageToolsPath     = $PackageToolsPath;
+        PackageRootPath      = $PackageRootPath
       }
 
       $PackageBuildPathArray = $PackageBuildPathes.Values | Sort
@@ -98,5 +106,5 @@ function New-ChocoSpecBuildEnvironment {
       $PackageBuildPathes = @{}
     }
 
-    Return ($BuildPathes + $PackageBuildDirectoryNames + $PackageBuildPathes)
+    Return ($BuildPathes + $PackageBuildPathes + $PackageBuildDirectoryNames)
 }

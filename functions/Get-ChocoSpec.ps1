@@ -49,7 +49,11 @@ Gets the chocospec
       'copyright',
       'releaseNotes',
       'sources',
-      'setup',
+      'prep',
+      'build',
+      'install',
+      'check',
+      'clean',
       'prefix',
       'ChocolateyBeforeInstall',
       'ChocolateyInstall',
@@ -90,7 +94,20 @@ Gets the chocospec
       }
     }
 
-    Return $Result
+    # Interpolation ExcludedKeys
+    $InterpolationExcludeKeys = @(
+      'chocolateySetup',
+      'chocolateyBeforeInstall',
+      'chocolateyInstall',
+      'chocolateyAfterInstall',
+      'chocolateyBeforeUninstall',
+      'chocolateyUninstall',
+      'chocolateyAfterUninstall'
+    )
+
+    $InterpolatedResult = Invoke-HashInterpolation $Result $InterpolationExcludeKeys
+
+    Return $InterpolatedResult
   }
 
 }

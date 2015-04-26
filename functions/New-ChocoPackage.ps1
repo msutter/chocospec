@@ -162,11 +162,13 @@ Param
 
     ###################### Build Environment dirs ######################
 
-    $ChocoSpecBuildVars = New-ChocoSpecBuildEnvironment $AbsBuildSpace -PackageId $id
+    $chocoBuildPathes = New-ChocoSpecBuildEnvironment `
+      -Path       $AbsBuildSpace `
+      -PackageId  $id
 
     # Create variables as contained the Pathes in scriptKey
-    foreach ($NewVar in $ChocoSpecBuildVars.Keys) {
-      New-Variable -Name $NewVar -Value $ChocoSpecBuildVars.$NewVar
+    foreach ($NewVar in $chocoBuildPathes.Keys) {
+      New-Variable -Name $NewVar -Value $chocoBuildPathes.$NewVar
     }
 
     ###################### Nuspec Generation ######################
@@ -292,6 +294,16 @@ Param
 
     Update-Nuspec -Path $NuspecPath -files $ChocoToolsfiles
 
+    # Update nuspec for chocolatey files folder
+    $PackageRootfiles = @(
+      @{
+        src = "${RootDirectoryName}\**";
+        target = 'files'
+      }
+    )
+
+    Update-Nuspec -Path $NuspecPath -files $PackageRootfiles
+
     #############################################################
     # Package Sources
     #############################################################
@@ -329,48 +341,103 @@ Param
       }
     }
 
-    #############################################################
-    # Package Root
-    #############################################################
+    ############################################################################
+    #
+    # prep
+    #
+    # This reads the sources and patches in the source directory.
+    # It unpackages the sources to a subdirectory underneath the
+    # build directory and applies the patches.
+    #
+    # source directory: ${PackageSourcesPath}
+    # build directory: ${PackageBuildPath}
+    #
+    ############################################################################
+    $PrepScriptFilePath = New-ChocoBuildScript `
+      -Type               'Prep' `
+      -PackageScriptsPath $PackageScriptsPath `
+      -Content            $prep
 
-    $SetupScriptFileName = 'chocolateySetup.ps1'
-    $SetupScriptFilePath = Join-Path $PackageBuildPath $SetupScriptFileName
+    $null = & "${PrepScriptFilePath}"
 
-    # if (Test-Path $PackageRootPath) {
-    #   $null = Remove-Item -Force -Recurse $PackageRootPath
-    # }
-    # $null = New-Item -ItemType Directory -Path $PackageRootPath
+    ############################################################################
+    #
+    # build
+    #
+    # This compiles the files underneath the build directory
+    #
+    # build directory: ${PackageBuildPath}
+    #
+    ############################################################################
+    $BuildScriptFilePath = New-ChocoBuildScript `
+      -Type               'Build' `
+      -PackageScriptsPath $PackageScriptsPath `
+      -Content            $build
 
-    if ($setup) {
-      Write-Verbose 'Executing setup:'
-      Write-Verbose "$($setup)"
-      "$($setup)" | Out-File -filepath $SetupScriptFilePath
-    } else {
-      Write-Verbose 'Executing default setup'
-      "`$null = Copy-Item -Force -Recurse -Exclude .git `"`${PackageSourcesPath}\*`" `"`${PackageRootPath}`"" | Out-File -filepath $SetupScriptFilePath
-      Write-Verbose (Get-Content $SetupScriptFilePath)
-    }
-    Write-Verbose "SetupScriptFilePath: ${SetupScriptFilePath}"
-    $null = & "${SetupScriptFilePath}"
+    $null = & "${BuildScriptFilePath}"
 
-    # Update nuspec for chocolatey tools folder
-    $PackageRootfiles = @(
-      @{
-        src = "${RootDirectoryName}\**";
-        target = 'files'
-      }
-    )
+    ############################################################################
+    #
+    # install
+    #
+    # This reads the files underneath the build directory %_builddir and writes
+    # to a directory underneath the build root directory %_buildrootdir.
+    # The files that are written are the files that are supposed to be installed
+    # when the binary package is installed by an end-user.
+    #
+    # Beware of the weird terminology: The build root directory is not the same
+    # as the build directory.
+    #
+    # build directory: ${PackageBuildPath}
+    # root directory: ${PackageRoorPath}
+    #
+    ############################################################################
+    $InstallScriptFilePath = New-ChocoBuildScript `
+      -Type               'Install' `
+      -PackageScriptsPath $PackageScriptsPath `
+      -Content            $build
 
-    Update-Nuspec -Path $NuspecPath -files $PackageRootfiles
+    $null = & "${InstallScriptFilePath}"
+
+    ############################################################################
+    # Check
+    #
+    # Check that the software works properly.
+    # This is often implemented by running some variation of "make test".
+    # Many packages don't implement this stage.
+    #
+    ############################################################################
+    $CheckScriptFilePath = New-ChocoBuildScript `
+      -Type               'Check' `
+      -PackageScriptsPath $PackageScriptsPath `
+      -Content            $build
+
+    $null = & "${CheckScriptFilePath}"
+
 
     #############################################################
     # Generate the package
     #############################################################
-    New-NuPkg -NuspecPath $NuspecPath -BasePath $PackageBuildPath -OutputDirectory $NupkgsPath -Verbose
+    New-NuPkg `
+      -NuspecPath       $NuspecPath `
+      -BasePath         $PackageBuildRootPath `
+      -OutputDirectory  $NupkgsPath `
+      -Verbose
+
     $null = Copy-Item $NupkgsPath/*.nupkg $AbsOutputDirectory
 
     #############################################################
-    # Clean the temp build directory
+    # Clean
+    #############################################################
+    $CleanScriptFilePath = New-ChocoBuildScript `
+      -Type               'Clean' `
+      -PackageScriptsPath $PackageScriptsPath `
+      -Content            $build
+
+    $null = & "${CleanScriptFilePath}"
+
+    #############################################################
+    # Clean the build space directory if temp generated
     #############################################################
 
     if (!$PSBoundParameters.ContainsKey('BuildSpace')) {
