@@ -11,29 +11,4 @@ See the %install section below for more.
 
 #>
 
-  $install = ?
-  $PackageBuildPath = ?
-
-  $InstallScriptFileName = 'chocolateyinstall.ps1'
-  $InstallScriptFilePath = Join-Path $PackageBuildPath $InstallScriptFileName
-
-  if ($install) {
-
-    Write-Verbose 'Executing install:'
-    Write-Verbose "$($install)"
-    "$($install)" | Out-File -filepath $InstallScriptFilePath
-
-  } else {
-
-    Write-Verbose 'Executing default install'
-    "`$null = Copy-Item -Force -Recurse -Exclude .git `"`${PackageSourcesPath}\*`" `"`${PackageRootPath}`"" | Out-File -filepath $InstallScriptFilePath
-    Write-Verbose (Get-Content $InstallScriptFilePath)
-
-  }
-
-  Write-Verbose "InstallScriptFilePath: ${InstallScriptFilePath}"
-  $null = & "${InstallScriptFilePath}"
-
-
-
 }
