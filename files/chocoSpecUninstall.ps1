@@ -8,17 +8,7 @@ try {
   Import-Module -Name chocoHelpers
 
   # Load Package variables (datas)
-  $ChocoData = Import-ChocoHelpersVariables -PackagePath "${PackagePath}"
-  foreach ($Var in $ChocoData.Keys) {
-      Write-Verbose "Importing variable $($ChocoData.$Var) in the local scope"
-
-      # Pathes with spaces workaround
-      if ($ChocoData.$Var -is [system.string]) {
-          New-Variable -Name $Var -Value "$($ChocoData.$Var)"
-      } else {
-          New-Variable -Name $Var -Value $ChocoData.$Var
-      }
-  }
+  Import-ChocoHelpersVariables -PackagePath "${PackagePath}"
 
   #------- BEFORE UNINSTALL SCRIPT ---------#
   $BeforeUninstallPath = "${ToolsPath}\chocolateyBeforeUninstall.ps1"
