@@ -80,7 +80,7 @@ function New-ChocoSpecBuildEnvironment {
       }
 
       $PackageScriptsPath        = Join-Path $ScriptsPath $PackageDirectoryName
-      $PackageSourcesPath        = Join-Path $SourcesPath $PackageDirectoryName
+      # $PackageSourcesPath        = Join-Path $SourcesPath $PackageDirectoryName
 
       $PackageBuildPath          = Join-Path $BuildPath $PackageDirectoryName
       # $PackageBuildFilesPath     = Join-Path $PackageBuildPath $FilesDirectoryName
@@ -92,7 +92,7 @@ function New-ChocoSpecBuildEnvironment {
 
       $PackageBuildPathes = @{
         PackageScriptsPath        = $PackageScriptsPath;
-        PackageSourcesPath        = $PackageSourcesPath;
+        # PackageSourcesPath        = $PackageSourcesPath;
         PackageBuildPath          = $PackageBuildPath;
         # PackageBuildToolsPath     = $PackageBuildToolsPath;
         # PackageBuildFilesPath     = $PackageBuildFilesPath

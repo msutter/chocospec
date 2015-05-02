@@ -23,42 +23,46 @@ See the %prep section below for more.
     [switch] $C,
 
     [Parameter(Mandatory = $false)]
-    [switch] $D
+    [switch] $D,
+
+    [Parameter(Mandatory = $false)]
+    [int] $SourceIndex = 0
   )
 
-  if (!$D) {
-    $null = Remove-Item -Force -Recurse $PackageBuildPath
-  }
+    $SourcePath = "${SourcesPath}\$($sources[$SourceIndex].file)"
 
-  if ($T) {
-
-      $null = New-Item -Force -ItemType Directory $PackageBuildPath
-      $null = Copy-Item -Force -Recurse -Exclude .git "${PackageSourcesPath}\*" "${PackageBuildPath}"
-
-  } else {
-
-    [System.Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem") | Out-Null
-    $Archive = Get-ChildItem -Filter *.zip $PackageSourcesPath
-    $ArchivePath = $Archive.FullName
-    Write-Verbose "ArchivePath: ${ArchivePath}"
-
-    if ($C) {
-      # Create the directory and unpack in it
-      $null = New-Item -Force -ItemType Directory $PackageBuildPath
-      $null = [System.IO.Compression.ZipFile]::ExtractToDirectory($ArchivePath, $PackageBuildPath)
-
-    } elseIf ($PSBoundParameters.ContainsKey('N')) {
-
-      [System.IO.Compression.ZipFile]::ExtractToDirectory($ArchivePath, $BuildPath)
-      Rename-Item (Join-Path $BuildPath $N) $PackageBuildPath
-
-    } else {
-      # Unpack (should create the PackageBuild Directory)
-      $null = [System.IO.Compression.ZipFile]::ExtractToDirectory($ArchivePath, $BuildPath)
-
+    if (!$D) {
+      $null = Remove-Item -Force -Recurse $PackageBuildPath
     }
 
-  }
+    if ($T) {
+
+        $null = New-Item -Force -ItemType Directory $PackageBuildPath
+        $null = Copy-Item -Force -Recurse -Exclude .git "${SourcePath}" "${PackageBuildPath}"
+
+    } else {
+
+      [System.Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem") | Out-Null
+      $ArchivePath = $SourcePath
+      Write-Verbose "ArchivePath: ${ArchivePath}"
+
+      if ($C) {
+        # Create the directory and unpack in it
+        $null = New-Item -Force -ItemType Directory $PackageBuildPath
+        $null = [System.IO.Compression.ZipFile]::ExtractToDirectory($ArchivePath, $PackageBuildPath)
+
+      } elseIf ($PSBoundParameters.ContainsKey('N')) {
+
+        [System.IO.Compression.ZipFile]::ExtractToDirectory($ArchivePath, $BuildPath)
+        Rename-Item (Join-Path $BuildPath $N) $PackageBuildPath
+
+      } else {
+        # Unpack (should create the PackageBuild Directory)
+        $null = [System.IO.Compression.ZipFile]::ExtractToDirectory($ArchivePath, $BuildPath)
+
+      }
+
+    }
 
 }
 

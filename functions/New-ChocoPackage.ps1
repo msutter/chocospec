@@ -286,7 +286,6 @@ Param
 
     foreach ($scriptKey in $scriptskeys) {
       if ($PSBoundParameters.ContainsKey($scriptKey)) {
-        Write-Warning "${scriptKey}: ${PackageBuildRootToolsPath}\${scriptKey}.ps1"
         "$(Get-Variable -Name $scriptKey -valueOnly)" | Out-File -filepath "${PackageBuildRootToolsPath}\${scriptKey}.ps1"
 
       } else {
@@ -334,7 +333,7 @@ Param
               $HttpRepoHost = $source.host
             }
             $Filename = $source.file
-            $FilePath = Join-Path $PackageSourcesPath $Filename
+            $FilePath = Join-Path $SourcesPath $Filename
 
             $FullUrl  = "${HttpRepoHost}/$($source.path)"
 
@@ -343,13 +342,16 @@ Param
           }
 
           git {
-            Write-Verbose "Cloning $($source.url) into ${PackageSourcesPath}"
-            $null = & "${GitCommand}" clone $source.url "${PackageSourcesPath}" 2>&1
+            Write-Verbose "Cloning $($source.url) into ${SourcesPath}"
+            $Location = Get-Location
+            Set-Location "${SourcesPath}"
+            $null = & "${GitCommand}" clone $source.url 2>&1
+            Set-Location "${Location}"
           }
 
           local {
-            Write-Verbose "Copying $($source.path) into ${PackageSourcesPath}"
-            $null = Copy-Item -Force "$($source.path)/*" "${PackageSourcesPath}"
+            Write-Verbose "Copying $($source.path) into ${SourcesPath}"
+            $null = Copy-Item -Force "$($source.path)" "${SourcesPath}/."
           }
         }
       }
@@ -363,7 +365,7 @@ Param
     # It unpackages the sources to a subdirectory underneath the
     # build directory and applies the patches.
     #
-    # source directory: ${PackageSourcesPath}
+    # source directory: ${SourcesPath}
     # build directory: ${PackageBuildPath}
     #
     ############################################################################
