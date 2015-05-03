@@ -52,7 +52,6 @@
 <%      } else { %>
       File = '<%= $($Uninstaller.File) %>';
 <%      } %>
-
 <%      if ($Uninstaller.Args.Count -gt 0 ) { %>
       Args = `@(
 <%        Foreach ($Arg in $Uninstaller.Args) { %>
