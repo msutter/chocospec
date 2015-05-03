@@ -49,7 +49,7 @@
     `@{
 <%      if ($Uninstaller.WMI) { %>
       WMI = '<%= $($Uninstaller.WMI) %>';
-<%      else { %>
+<%      } else { %>
       File = '<%= $($Uninstaller.File) %>';
 <%      } %>
 
