@@ -47,7 +47,12 @@
 <%    Foreach ($Uninstaller in $Uninstallers) { %>
 <%      $LastUninstaller = ($([array]::IndexOf($Uninstallers, $Uninstaller)) -eq ($($Uninstallers.Count) - 1) ) %>
     `@{
+<%      if ($Uninstaller.WMI) { %>
+      WMI = '<%= $($Uninstaller.WMI) %>';
+<%      else { %>
       File = '<%= $($Uninstaller.File) %>';
+<%      } %>
+
 <%      if ($Uninstaller.Args.Count -gt 0 ) { %>
       Args = `@(
 <%        Foreach ($Arg in $Uninstaller.Args) { %>
