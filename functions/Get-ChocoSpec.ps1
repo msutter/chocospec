@@ -94,9 +94,13 @@ Gets the chocospec
       }
     }
 
-    # Interpolation ExcludedKeys
+    # Interpolation ExcludedKeys (all powershell scripts)
     $InterpolationExcludeKeys = @(
-      'chocolateySetup',
+      'prep',
+      'build',
+      'install',
+      'check',
+      'clean',
       'chocolateyBeforeInstall',
       'chocolateyInstall',
       'chocolateyAfterInstall',
