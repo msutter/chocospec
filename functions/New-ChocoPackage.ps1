@@ -335,7 +335,11 @@ Param
             $Filename = $source.file
             $FilePath = Join-Path $SourcesPath $Filename
 
-            $FullUrl  = "${HttpRepoHost}/$($source.path)"
+            if ($source.url) {
+              $FullUrl  = "$($source.url)"
+            } else {
+              $FullUrl  = "${HttpRepoHost}/$($source.path)"
+            }
 
             Write-Verbose "Downloading ${Filename} from ${HttpRepoHost}"
             Invoke-WebRequest -Uri $FullUrl -OutFile $FilePath
