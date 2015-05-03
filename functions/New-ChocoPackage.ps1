@@ -415,7 +415,7 @@ Param
     $InstallScriptFilePath = New-ChocoBuildScript `
       -Type               'Install' `
       -PackageScriptsPath $PackageScriptsPath `
-      -Content            $build
+      -Content            $install
 
     $null = & "${InstallScriptFilePath}"
 
@@ -430,7 +430,7 @@ Param
     $CheckScriptFilePath = New-ChocoBuildScript `
       -Type               'Check' `
       -PackageScriptsPath $PackageScriptsPath `
-      -Content            $build
+      -Content            $check
 
     $null = & "${CheckScriptFilePath}"
 
@@ -452,7 +452,7 @@ Param
     $CleanScriptFilePath = New-ChocoBuildScript `
       -Type               'Clean' `
       -PackageScriptsPath $PackageScriptsPath `
-      -Content            $build
+      -Content            $clean
 
     $null = & "${CleanScriptFilePath}"
 
