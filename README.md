@@ -119,6 +119,9 @@ A list of key/value pairs, commonly called a “hash” or a “dictionary”.
 # chocolateyInstall
 
 # chocolateyUninstall
+if there is no specific uninstall executable, set the WMI package name
+to get a List o all VMI Packaget type in Powershel '(Get-WmiObject -Class Win32_Product).name'
+
 
 ## Example
 
@@ -245,3 +248,5 @@ A package can indicate which versions of its dependencies it supports, but there
 is also another implicit dependency all packages have: the the chocolateyHelpers.
 Since the this powershell library evolves over time, a package may only work with certain
 versions of it.
+
+
