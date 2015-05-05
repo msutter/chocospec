@@ -51,6 +51,7 @@ Copyright = '(c) 2015 Marc Sutter. All rights reserved.'
 RequiredModules = @(
   'NuspecHelpers',
   'PowerYaml',
+  'AlphaFS',
   'Eps'
 )
 
