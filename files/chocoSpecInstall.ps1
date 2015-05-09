@@ -8,7 +8,19 @@ try {
   Import-Module -Name chocoHelpers
 
   # Load Package variables (datas)
-  Import-ChocoHelpersVariables -PackagePath "${PackagePath}"
+  $ChocoData = Import-ChocoHelpersVariables -PackagePath "${PackagePath}"
+
+  # Add the datas as local variable in the calling scope ( -scope 1 )
+  foreach ($Var in $ChocoData.Keys) {
+      Write-Verbose "Importing variable $($ChocoData.$Var) in the script scope"
+
+      # Pathes with spaces workaround
+      if ($ChocoData.$Var -is [system.string]) {
+          New-Variable -Name $Var -Value "$($ChocoData.$Var)"
+      } else {
+          New-Variable -Name $Var -Value $ChocoData.$Var
+      }
+  }
 
   #------- EXECUTE BEFORE-INSTALL SCRIPT WHEN PRESENT ---------#
   $BeforeInstallPath = "${ToolsPath}\chocolateyBeforeInstall.ps1"
