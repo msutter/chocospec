@@ -5,7 +5,8 @@ try {
   $PackagePath = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 
   # Import chocolateyPkgHelpers Module
-  Import-Module -Name chocoHelpers -Force
+  #Import-Module -Name chocoHelpers -Force
+  Import-Module -force -verbose -Name c:\powershell\chocohelpers\chocohelpers.psm1
 
   # Load Package variables (datas)
   $ChocoManifestData = Import-ChocoHelpersVariables -PackagePath "${PackagePath}"
