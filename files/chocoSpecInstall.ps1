@@ -5,41 +5,55 @@ try {
   $PackagePath = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 
   # Import chocolateyPkgHelpers Module
-  Import-Module -Name chocoHelpers
+  #Import-Module -Name chocoHelpers
+  Import-Module -force -verbose -Name c:\powershell\chocohelpers\chocohelpers.psm1
 
   # Load Package variables (datas)
-  $ChocoData = Import-ChocoHelpersVariables -PackagePath "${PackagePath}"
+  $ChocoManifestData = Import-ChocoHelpersVariables -PackagePath "${PackagePath}"
 
-  # Add the datas as local variable in the calling scope ( -scope 1 )
-  foreach ($Var in $ChocoData.Keys) {
-      Write-Verbose "Importing variable $($ChocoData.$Var) in the script scope"
+  # Add the datas as local variable
+  Write-Verbose '------- Variable you can use in the chocospec --------'
 
+  foreach ($Var in $ChocoManifestData.Keys) {
+      Write-Verbose "${Var}: $($ChocoManifestData.$Var)"
       # Pathes with spaces workaround
-      if ($ChocoData.$Var -is [system.string]) {
-          New-Variable -Name $Var -Value "$($ChocoData.$Var)"
+      if ($ChocoManifestData.$Var -is [system.string]) {
+          Set-Variable -Name $Var -Value "$($ChocoManifestData.$Var)"
       } else {
-          New-Variable -Name $Var -Value $ChocoData.$Var
+          Set-Variable -Name $Var -Value $ChocoManifestData.$Var
       }
   }
+
+  Write-Verbose '------------------------------------------------------'
 
   #------- EXECUTE BEFORE-INSTALL SCRIPT WHEN PRESENT ---------#
   $BeforeInstallPath = "${ToolsPath}\chocolateyBeforeInstall.ps1"
   if (Test-Path -Path "${BeforeInstallPath}") {
     Write-Verbose "Executing ${BeforeInstallPath}"
-    & "${BeforeInstallPath}"
+    & "${BeforeInstallPath}" -Verbose
   }
 
   #------- INSTALLATION SETUP (Only files deployement here ) ---------#
-  Install-ChocoPkgFiles
+  if ( Test-Path variable:Prefix ) {
+    Install-ChocoPkgFiles `
+      -Prefix $Prefix `
+      -FilesPath $FilesPath `
+      -PackageId $PackageId `
+      -Verbose:($PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent -eq $true)
+  }
 
   #------- EXECUTE AFTER-INSTALL SCRIPT ---------#
   $AfterInstallPath = "${ToolsPath}\chocolateyAfterInstall.ps1"
   if (Test-Path -Path "${AfterInstallPath}") {
     Write-Verbose "Executing ${AfterInstallPath}"
-    & "${AfterInstallPath}"
+    & "${AfterInstallPath}" -Verbose
   } else {
     # Default install of exe, msi, etc...
-    Install-ChocoPkgInstallers
+    Install-ChocoPkgInstallers `
+      -Installers $Installers `
+      -FilesPath $FilesPath `
+      -PackageId $PackageId `
+      -Verbose:($PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent -eq $true)
   }
 
   #------- DONE -----------------------#

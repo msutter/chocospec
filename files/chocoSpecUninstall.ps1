@@ -3,12 +3,27 @@ try {
 
   # Set the location of the package on disk
   $PackagePath = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
-
-  # Import chocolateyPkgHelpers Module
-  Import-Module -Name chocoHelpers
+# Import chocolateyPkgHelpers Module
+  #Import-Module -Name chocoHelpers
+  Import-Module -force -verbose -Name c:\powershell\chocohelpers\chocohelpers.psm1
 
   # Load Package variables (datas)
-  Import-ChocoHelpersVariables -PackagePath "${PackagePath}"
+  $ChocoManifestData = Import-ChocoHelpersVariables -PackagePath "${PackagePath}"
+
+  # Add the datas as local variable
+  Write-Verbose '------- Variable you can use in the chocospec --------'
+
+  foreach ($Var in $ChocoManifestData.Keys) {
+      Write-Verbose "${Var}: $($ChocoManifestData.$Var)"
+      # Pathes with spaces workaround
+      if ($ChocoManifestData.$Var -is [system.string]) {
+          Set-Variable -Name $Var -Value "$($ChocoManifestData.$Var)"
+      } else {
+          Set-Variable -Name $Var -Value $ChocoManifestData.$Var
+      }
+  }
+
+  Write-Verbose '------------------------------------------------------'
 
   #------- BEFORE UNINSTALL SCRIPT ---------#
   $BeforeUninstallPath = "${ToolsPath}\chocolateyBeforeUninstall.ps1"
@@ -17,11 +32,21 @@ try {
     & "${BeforeUninstallPath}"
   } else {
     # Default uninstall of exe, msi, etc...
-    Uninstall-ChocoPkgUninstallers
+    Uninstall-ChocoPkgUninstallers `
+      -Uninstallers $Uninstallers `
+      -FilesPath $FilesPath `
+      -PackageId $PackageId `
+      -Verbose:($PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent -eq $true)
   }
 
   #------- UNINSTALLATION SETUP ---------#
-  Uninstall-ChocoPkgFiles
+  if ( Test-Path variable:Prefix ) {
+    Uninstall-ChocoPkgFiles `
+      -Prefix $Prefix `
+      -FilesPath $FilesPath `
+      -PackageId $PackageId `
+      -Verbose:($PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent -eq $true)
+  }
 
   #------- AFTER UNINSTALL SCRIPT ---------#
   $AfterUninstallPath = "${ToolsPath}\chocolateyAfterUninstall.ps1"
