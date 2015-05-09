@@ -29,7 +29,8 @@ try {
   $BeforeInstallPath = "${ToolsPath}\chocolateyBeforeInstall.ps1"
   if (Test-Path -Path "${BeforeInstallPath}") {
     Write-Verbose "Executing ${BeforeInstallPath}"
-    & "${BeforeInstallPath}" -Verbose
+    & "${BeforeInstallPath}" `
+      -Verbose:($PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent -eq $true)
   }
 
   #------- INSTALLATION SETUP (Only files deployement here ) ---------#
@@ -45,7 +46,8 @@ try {
   $AfterInstallPath = "${ToolsPath}\chocolateyAfterInstall.ps1"
   if (Test-Path -Path "${AfterInstallPath}") {
     Write-Verbose "Executing ${AfterInstallPath}"
-    & "${AfterInstallPath}" -Verbose
+    & "${AfterInstallPath}" `
+      -Verbose:($PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent -eq $true)
   } else {
     # Default install of exe, msi, etc...
     Install-ChocoPkgInstallers `

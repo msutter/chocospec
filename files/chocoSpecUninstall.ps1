@@ -29,7 +29,9 @@ try {
   $BeforeUninstallPath = "${ToolsPath}\chocolateyBeforeUninstall.ps1"
   if (Test-Path -Path "${BeforeUninstallPath}") {
     Write-Verbose "Executing ${BeforeUninstallPath}"
-    & "${BeforeUninstallPath}"
+    & "${BeforeUninstallPath}" `
+      -Verbose:($PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent -eq $true)
+
   } else {
     # Default uninstall of exe, msi, etc...
     Uninstall-ChocoPkgUninstallers `
@@ -52,7 +54,8 @@ try {
   $AfterUninstallPath = "${ToolsPath}\chocolateyAfterUninstall.ps1"
   if (Test-Path -Path "${AfterUninstallPath}") {
     Write-Verbose "Executing ${AfterUninstallPath}"
-    & "${AfterUninstallPath}"
+    & "${AfterUninstallPath}" `
+      -Verbose:($PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent -eq $true)
   }
 
   #------- DONE -----------------------#
