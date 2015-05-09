@@ -378,8 +378,9 @@ Param
       -PackageScriptsPath $PackageScriptsPath `
       -Content            $prep
 
+    Push-Location $SourcesPath
     $null = & "${PrepScriptFilePath}"
-
+    Pop-Location
     ############################################################################
     #
     # build
@@ -394,7 +395,9 @@ Param
       -PackageScriptsPath $PackageScriptsPath `
       -Content            $build
 
+    Push-Location $PackageBuildPath
     $null = & "${BuildScriptFilePath}"
+    Pop-Location
 
     ############################################################################
     #
@@ -417,7 +420,9 @@ Param
       -PackageScriptsPath $PackageScriptsPath `
       -Content            $install
 
+    Push-Location $PackageBuildPath
     $null = & "${InstallScriptFilePath}"
+    Pop-Location
 
     ############################################################################
     # Check
@@ -432,7 +437,9 @@ Param
       -PackageScriptsPath $PackageScriptsPath `
       -Content            $check
 
+    Push-Location $PackageBuildRootPath
     $null = & "${CheckScriptFilePath}"
+    Pop-Location
 
 
     #############################################################
