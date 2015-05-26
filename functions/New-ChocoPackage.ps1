@@ -346,11 +346,22 @@ Param
           }
 
           git {
-            Write-Verbose "Cloning $($source.url) into ${SourcesPath}"
             $Location = Get-Location
             Set-Location "${SourcesPath}"
-            $null = & "${GitCommand}" clone $source.url 2>&1
+
+            if ($source.ContainsKey("branch")) {
+              $RepoBranch = $source.branch
+            } else {
+              $RepoBranch = 'master'
+            }
+
+            Write-Verbose "Cloning '$($source.url)' branch '$RepoBranch' into ${SourcesPath}"
+            $null = & "${GitCommand}" clone -b $RepoBranch $source.url 2>&1
             Set-Location "${Location}"
+
+            # Set GitRepoPath variable
+            $RepoName = ($source.url.split('/')[-1]) -replace '.git$', ''
+            $GitRepoPath = Join-Path "${SourcesPath}" $RepoName
           }
 
           local {
