@@ -154,6 +154,7 @@ Param
   Begin {}
 
   Process {
+    $ErrorActionPreference = 'Stop'
 
     $MyModulePath = Split-Path -Parent $PSScriptRoot
     Write-Verbose "MyModulePath: ${MyModulePath}"
@@ -356,7 +357,9 @@ Param
             }
 
             Write-Verbose "Cloning '$($source.url)' branch '$RepoBranch' into ${SourcesPath}"
-            $null = & "${GitCommand}" clone -b $RepoBranch $source.url 2>&1
+            $GitArgs = "clone -b ${RepoBranch} $($source.url)"
+            $GitProcess = Invoke-Exec $GitCommand $GitArgs
+            Write-Verbose $GitProcess.stderr
             Set-Location "${Location}"
 
             # Set GitRepoPath variable
