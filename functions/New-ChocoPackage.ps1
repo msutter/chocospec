@@ -368,7 +368,7 @@ Param
 
             Write-Verbose "Cloning '$($source.url)' branch '$RepoBranch' into ${SourcesPath}"
             Write-Verbose (Get-Location)
-            $GitArgs = "clone -b ${RepoBranch} $($source.url) ${GitRepoPath}"
+            $GitArgs = "clone -b ${RepoBranch} $($source.url)"
             $GitProcess = Invoke-Exec $GitCommand $GitArgs
             Write-Verbose $GitProcess.stderr
             Set-Location "${Location}"

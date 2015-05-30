@@ -8,6 +8,7 @@ function Invoke-Exec
       [string]$Arguments = ''
     )
     $pinfo = New-Object System.Diagnostics.ProcessStartInfo
+    $pinfo.WorkingDirectory = Get-Location
     $pinfo.FileName = $Command
     $pinfo.Arguments = $Arguments
     $pinfo.RedirectStandardError = $true
