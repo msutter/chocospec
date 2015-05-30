@@ -347,8 +347,18 @@ Param
           }
 
           git {
+            # Set GitRepoPath variable
+            $RepoName = ($source.url.split('/')[-1]) -replace '.git$', ''
+            $GitRepoPath = Join-Path "${SourcesPath}" $RepoName
             $Location = Get-Location
+
             Set-Location "${SourcesPath}"
+
+            # remove old files
+            if (Test-Path $GitRepoPath) {
+              Write-Warning "cleaning folder $GitRepoPath"
+              Remove-Item -Recurse -Force $GitRepoPath
+            }
 
             if ($source.ContainsKey("branch")) {
               $RepoBranch = $source.branch
@@ -357,14 +367,12 @@ Param
             }
 
             Write-Verbose "Cloning '$($source.url)' branch '$RepoBranch' into ${SourcesPath}"
-            $GitArgs = "clone -b ${RepoBranch} $($source.url)"
+            Write-Verbose (Get-Location)
+            $GitArgs = "clone -b ${RepoBranch} $($source.url) ${GitRepoPath}"
             $GitProcess = Invoke-Exec $GitCommand $GitArgs
             Write-Verbose $GitProcess.stderr
             Set-Location "${Location}"
 
-            # Set GitRepoPath variable
-            $RepoName = ($source.url.split('/')[-1]) -replace '.git$', ''
-            $GitRepoPath = Join-Path "${SourcesPath}" $RepoName
           }
 
           local {
