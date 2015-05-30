@@ -29,7 +29,7 @@ function Invoke-Exec
     if ($result.exitcode -ne 0) {
       if (![string]::IsNullOrEmpty($result.stderr)) {
         throw $result.stderr
-      } elsif (![string]::IsNullOrEmpty($result.stdout)) {
+      } elseif (![string]::IsNullOrEmpty($result.stdout)) {
         throw $result.stdout
       } else {
         throw "Command $Command $Arguments failed with no output !"
