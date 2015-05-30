@@ -18,13 +18,18 @@ function Invoke-Exec
     $p = New-Object System.Diagnostics.Process
     $p.StartInfo = $pinfo
     $null = $p.Start()
+
+    $stdout = $p.StandardOutput.ReadToEnd()
+    $stderr = $p.StandardError.ReadToEnd()
+
     $null = $p.WaitForExit()
 
     $result = New-Object psobject -Property @{
       exitcode = $p.ExitCode
-      stdout = $p.StandardOutput.ReadToEnd()
-      stderr = $p.StandardError.ReadToEnd()
+      stdout = $stdout
+      stderr = $stderr
     }
+
 
     if ($result.exitcode -ne 0) {
       if (![string]::IsNullOrEmpty($result.stderr)) {
