@@ -45,6 +45,7 @@ See the %prep section below for more.
         $EntriesBasePathes = @()
         foreach ($ZipEntry in $Zip.Entries) {
           # check basepath for each file
+          Write-Verbose "ZipEntry.FullName: $($ZipEntry.FullName)"
           $EntriesBasePathes += $ZipEntry.FullName.split('/')[0]
         }
 
@@ -52,6 +53,12 @@ See the %prep section below for more.
         $BasePathIsUnique = $BasePathes.count -eq 1
         $BasePath         = $BasePathes[0]
         $BasePathisValid  = $BasePath -eq $PackageDirectoryName
+
+        # Add Pathes infos
+        Write-Verbose "BasePathes: ${BasePathes}"
+        Write-Verbose "BasePathIsUnique: ${BasePathIsUnique}"
+        Write-Verbose "BasePath: ${BasePath}"
+        Write-Verbose "BasePathisValid: ${BasePathisValid}"
 
         if (!$BasePathIsUnique) {
           # Create the directory and unpack in it
