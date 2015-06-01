@@ -18,6 +18,10 @@ Param
   [Parameter(Mandatory = $true)]
   [string] $Id,
 
+  # Specifies the Version
+  [Parameter(Mandatory = $true)]
+  [string] $Version,
+
   # Specifies the Prefix
   [Parameter(Mandatory = $false)]
   [string] $Prefix,

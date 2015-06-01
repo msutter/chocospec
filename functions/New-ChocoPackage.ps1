@@ -259,24 +259,6 @@ Param
     # Package Choco Tools
     #############################################################
 
-    # Choco Manifest Generation
-    $ChocoParams = @{}
-
-    $null = $ChocoParams.Add('Id', $id)
-
-    if ($prefix) {
-      $null = $ChocoParams.Add('Prefix', $prefix)
-    }
-    if ($installers) {
-      $null = $ChocoParams.Add('Installers', $installers)
-    }
-    if ($uninstallers) {
-      $null = $ChocoParams.Add('Uninstallers', $uninstallers)
-    }
-
-    # Generate the Choco Manifest
-    $null = New-ChocoManifest -OutputDirectory $PackageBuildRootToolsPath @ChocoParams
-
     # Add Install/Uninstall custom scripts
     $scriptskeys = @(
       'chocolateyInstall',
@@ -473,6 +455,32 @@ Param
     Pop-Location
 
     #############################################################
+    # Get last nuspec after updates
+    #############################################################
+    $Nuspec = Get-Nuspec $NuspecPath
+
+    #############################################################
+    # Choco Manifest Generation
+    #############################################################
+    $ChocoParams = @{}
+
+    $null = $ChocoParams.Add('Id', $Nuspec.package.metadata.id)
+    $null = $ChocoParams.Add('Version', $Nuspec.package.metadata.version)
+
+    if ($prefix) {
+      $null = $ChocoParams.Add('Prefix', $prefix)
+    }
+    if ($installers) {
+      $null = $ChocoParams.Add('Installers', $installers)
+    }
+    if ($uninstallers) {
+      $null = $ChocoParams.Add('Uninstallers', $uninstallers)
+    }
+
+    # Generate the Choco Manifest
+    $null = New-ChocoManifest -OutputDirectory $PackageBuildRootToolsPath @ChocoParams
+
+    #############################################################
     # Generate the package(s) and save in temp location (parts)
     #############################################################
 
@@ -486,7 +494,6 @@ Param
     # Re-Generate the multi part package(s) if greater than maxsize
     #############################################################
 
-    $Nuspec        = Get-Nuspec $NuspecPath
     $NupkgFileName = "$($Nuspec.package.metadata.id).$($Nuspec.package.metadata.version).nupkg"
     $TempNuPkgPath = Join-Path $PackagePartsPath $NupkgFileName
     Write-Verbose "Package Path: ${TempNuPkgPath}"
@@ -518,11 +525,13 @@ Param
 
     } else {
       $null = Copy-Item $TempNuPkgPath $NupkgsPath
+      $null = Copy-Item $NuspecPath $SpecsPath
     }
 
     #############################################################
     # Copy nupkgs to output directory
     #############################################################
+    $null = Get-ChildItem $NupkgsPath | Copy-Item -Destination $AbsOutputDirectory
 
     #############################################################
     # Clean

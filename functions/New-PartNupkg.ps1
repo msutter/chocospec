@@ -69,9 +69,6 @@ Function New-PartNupkg
       }
     }
 
-    # Copy original tools scripts
-    Get-ChildItem $ToolsPath | Copy-Item -Destination $ToolsPartsPath
-
     # Split files content
     $Convertion = ConvertTo-ZipParts $FilesPath -OutputPath $ZipPartsPath -MaxOutputSegmentSize $MaxSizeInByte
     Write-Verbose $Convertion
@@ -79,8 +76,18 @@ Function New-PartNupkg
     Write-Verbose "NuspecPath: ${NuspecPath}"
     $OriginalSpec = Get-Nuspec $NuspecPath
     $OriginalId = $OriginalSpec.package.metadata.id
+    $OriginalVersion = $OriginalSpec.package.metadata.version
 
     Write-Verbose "Original id: $($OriginalSpec.package.metadata.id)"
+
+    # Initialize tools path for main package
+    $MainPartToolsPartsPath = Join-Path $ToolsPartsPath "${OriginalId}.${OriginalVersion}"
+    if (!(Test-Path $MainPartToolsPartsPath)) {
+      New-Item -ItemType Directory $MainPartToolsPartsPath
+    }
+
+    # Copy original tools scripts
+    Get-ChildItem $ToolsPath | Copy-Item -Destination $MainPartToolsPartsPath
 
     # Initialize Dependencies for the main package
     $Dependencies = @()
@@ -94,8 +101,15 @@ Function New-PartNupkg
       Write-Verbose "PartPackageId: ${PartPackageId}"
 
       $PartSpecFileName = "${PartPackageId}.nuspec"
-
       $PartSpecPath = Join-Path $NuspecPartsPath $PartSpecFileName
+
+      $PartToolsPartsPath = Join-Path $ToolsPartsPath "${PartPackageId}.${OriginalVersion}"
+      if (!(Test-Path $PartToolsPartsPath)) {
+        New-Item -ItemType Directory $PartToolsPartsPath
+      }
+
+      # Add install/uninstall chocolatey scripts
+      Copy-ChocoToolsScripts -ToolsDirectory $PartToolsPartsPath
 
       $NuspecParams = @{}
 
@@ -125,6 +139,10 @@ Function New-PartNupkg
 
       $Files = @(
         @{
+          src    = "${ToolsPartsFolder}\${PartPackageId}.${OriginalVersion}\**"
+          target = "tools"
+        },
+        @{
           src = "${ZipPartsFolder}\${SubZipPartFile}"
           target = "parts"
         }
@@ -132,6 +150,16 @@ Function New-PartNupkg
 
       Update-Nuspec -Path $PartSpecPath -Files $Files
 
+      # Choco Manifest Generation (needed for merging on install)
+      $ChocoParams = @{}
+
+      $null = $ChocoParams.Add('Id', $OriginalSpec.package.metadata.id)
+      $null = $ChocoParams.Add('Version', $OriginalSpec.package.metadata.version)
+
+      # Generate the Choco Manifest
+      $null = New-ChocoManifest -OutputDirectory $PartToolsPartsPath @ChocoParams
+
+      # Generate sub package
       New-NuPkg `
       -NuspecPath       $PartSpecPath `
       -BasePath         $Workspace `
@@ -156,7 +184,7 @@ Function New-PartNupkg
     # Add the Main Part zip file
     $Files = @(
       @{
-        src    = "${ToolsPartsFolder}\**"
+        src    = "${ToolsPartsFolder}\${OriginalId}.${OriginalVersion}\**"
         target = "tools"
       },
       @{
