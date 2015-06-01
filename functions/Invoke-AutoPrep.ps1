@@ -51,13 +51,11 @@ See the %prep section below for more.
 
         $BasePathes       = ($EntriesBasePathes | select -unique)
         $BasePathIsUnique = $BasePathes.count -eq 1
-        $BasePath         = $BasePathes[0]
-        $BasePathisValid  = $BasePath -eq $PackageDirectoryName
+        $BasePathisValid  = $BasePathes -eq $PackageDirectoryName
 
         # Add Pathes infos
         Write-Verbose "BasePathes: ${BasePathes}"
         Write-Verbose "BasePathIsUnique: ${BasePathIsUnique}"
-        Write-Verbose "BasePath: ${BasePath}"
         Write-Verbose "BasePathisValid: ${BasePathisValid}"
 
         if (!$BasePathIsUnique) {
@@ -68,9 +66,9 @@ See the %prep section below for more.
 
         } elseIf ($BasePathIsUnique -and !$BasePathisValid) {
           # Unpack the zip and rename the invalid base folder
-          Write-Verbose "Zip Content has an invalid base directory ! Renaming ${BasePath} to ${PackageDirectoryName} as base directory"
+          Write-Verbose "Zip Content has an invalid base directory ! Renaming ${BasePathes} to ${PackageDirectoryName} as base directory"
           [System.IO.Compression.ZipFile]::ExtractToDirectory($ArchivePath, $BuildPath)
-          Rename-Item (Join-Path $BuildPath $BasePath) $PackageBuildPath
+          Rename-Item (Join-Path $BuildPath $BasePathes) $PackageBuildPath
 
         } elseif ($BasePathIsUnique -and $BasePathisValid) {
           Write-Verbose "Zip Content has a valid base directory"
