@@ -15,6 +15,7 @@
       <dependency id="NuspecHelpers" />
       <dependency id="Poweryaml" />
       <dependency id="Eps" />
+      <dependency id="ZipParts" />
     </dependencies>
   </metadata>
   <files>

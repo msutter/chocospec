@@ -34,6 +34,12 @@ Param
   [Parameter(Mandatory = $false)]
   [string]$GitCommand = 'C:\Program Files (x86)\Git\bin\git.exe',
 
+  [Parameter(Mandatory = $false)]
+  [string] $NugetRepoUrl = 'http://www.nuget.org/api/v2',
+
+  [Parameter(Mandatory = $false)]
+  [string] $ChocolateyRepoUrl = 'http://www.chocolatey.org/api/v2',
+
   ## Nuspec params
 
   # Specifies the id
@@ -107,6 +113,9 @@ Param
 
   [Parameter(Mandatory = $false)]
   [hashtable[]] $sources,
+
+  [Parameter(Mandatory = $false)]
+  [string] $maxsize,
 
   [Parameter(Mandatory = $false)]
   [string] $prep,
@@ -190,7 +199,7 @@ Param
     $NuspecFileName = $id + ".nuspec"
     Write-Verbose "NuspecFileName: ${NuspecFileName}"
 
-    $NuspecPath = Join-Path $SpecsPath $NuspecFileName
+    $NuspecPath = Join-Path $PackagePartsPath $NuspecFileName
 
     $NuspecParams = @{}
 
@@ -463,17 +472,57 @@ Param
     $null = & "${CheckScriptFilePath}"
     Pop-Location
 
+    #############################################################
+    # Generate the package(s) and save in temp location (parts)
+    #############################################################
 
-    #############################################################
-    # Generate the package
-    #############################################################
     New-NuPkg `
       -NuspecPath       $NuspecPath `
       -BasePath         $PackageBuildRootPath `
-      -OutputDirectory  $NupkgsPath `
+      -OutputDirectory  $PackagePartsPath `
       -Verbose
 
-    $null = Copy-Item $NupkgsPath/*.nupkg $AbsOutputDirectory
+    #############################################################
+    # Re-Generate the multi part package(s) if greater than maxsize
+    #############################################################
+
+    $Nuspec        = Get-Nuspec $NuspecPath
+    $NupkgFileName = "$($Nuspec.package.metadata.id).$($Nuspec.package.metadata.version).nupkg"
+    $TempNuPkgPath = Join-Path $PackagePartsPath $NupkgFileName
+    Write-Verbose "Package Path: ${TempNuPkgPath}"
+
+    # check if we should split package in multiple part (due to maxsize limit)
+    $NuPkgSize = (Get-Item $TempNuPkgPath).length
+    Write-Verbose "Package Size: ${NuPkgSize}"
+
+    if ($PSBoundParameters.ContainsKey('maxsize')) {
+      $MaxSizeInByte = Invoke-Expression $maxsize
+      if ($NuPkgSize -gt $MaxSizeInByte) {
+        $PartNuPkg = $True
+      }
+    }
+
+    if ($PartNuPkg) {
+      Write-Warning "Package Size (${NuPkgSize}) is greater than the defined maxsize (${maxsize}/$MaxSizeInByte)"
+      Write-Warning "Generating Multiple Packages"
+      $PartsPathes = New-PartNuPkg `
+        -NuspecPath       $NuspecPath `
+        -FilesPath        $PackageBuildRootFilesPath `
+        -ToolsPath        $PackageBuildRootToolsPath `
+        -MaxSizeInByte    $MaxSizeInByte `
+        -Workspace        $PackagePartsPath `
+        -Verbose
+
+      $null = Get-ChildItem $PartsPathes.NuPkgPartsPath | Copy-Item -Destination $NupkgsPath
+      $null = Get-ChildItem $PartsPathes.NuspecPartsPath | Copy-Item -Destination $SpecsPath
+
+    } else {
+      $null = Copy-Item $TempNuPkgPath $NupkgsPath
+    }
+
+    #############################################################
+    # Copy nupkgs to output directory
+    #############################################################
 
     #############################################################
     # Clean

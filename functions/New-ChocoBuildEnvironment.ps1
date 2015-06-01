@@ -35,12 +35,13 @@ function New-ChocoSpecBuildEnvironment {
 
     # Environment specific
 
-    $ScriptsPath   = Join-Path $AbsPath 'SCRIPTS'
-    $SpecsPath     = Join-Path $AbsPath 'SPECS'
-    $SourcesPath   = Join-Path $AbsPath 'SOURCES'
-    $BuildPath     = Join-Path $AbsPath 'BUILD'
-    $BuildRootPath = Join-Path $AbsPath 'BUILDROOT'
-    $NupkgsPath    = Join-Path $AbsPath 'NUPKGS'
+    $BuildPath      = Join-Path $AbsPath 'BUILD'
+    $BuildRootPath  = Join-Path $AbsPath 'BUILDROOT'
+    $NupkgsPath     = Join-Path $AbsPath 'NUPKGS'
+    $SpecsPath      = Join-Path $AbsPath 'NUSPECS'
+    $PartsPath = Join-Path $AbsPath 'PARTS'
+    $ScriptsPath    = Join-Path $AbsPath 'SCRIPTS'
+    $SourcesPath    = Join-Path $AbsPath 'SOURCES'
 
     $BuildPathes = @{
       ScriptsPath   = $ScriptsPath;
@@ -48,7 +49,8 @@ function New-ChocoSpecBuildEnvironment {
       SourcesPath   = $SourcesPath;
       BuildPath     = $BuildPath;
       BuildRootPath = $BuildRootPath;
-      NupkgsPath    = $NupkgsPath
+      NupkgsPath    = $NupkgsPath;
+      PartsPath     = $PartsPath
     }
 
     $BuildPathArray = $BuildPathes.Values | Sort
@@ -56,7 +58,7 @@ function New-ChocoSpecBuildEnvironment {
     foreach ($PathItem in $BuildPathArray) {
       if ( Test-Path $PathItem ) {
       } else {
-        New-Item -ItemType Directory -Path $PathItem
+        $null = New-Item -ItemType Directory -Path $PathItem
       }
     }
 
@@ -80,25 +82,21 @@ function New-ChocoSpecBuildEnvironment {
       }
 
       $PackageScriptsPath        = Join-Path $ScriptsPath $PackageDirectoryName
-      # $PackageSourcesPath        = Join-Path $SourcesPath $PackageDirectoryName
-
       $PackageBuildPath          = Join-Path $BuildPath $PackageDirectoryName
-      # $PackageBuildFilesPath     = Join-Path $PackageBuildPath $FilesDirectoryName
-      # $PackageBuildToolsPath     = Join-Path $PackageBuildPath $ToolsDirectoryName
 
       $PackageBuildRootPath      = Join-Path $BuildRootPath $PackageDirectoryName
       $PackageBuildRootFilesPath = Join-Path $PackageBuildRootPath $FilesDirectoryName
       $PackageBuildRootToolsPath = Join-Path $PackageBuildRootPath $ToolsDirectoryName
 
+      $PackagePartsPath       = Join-Path $PartsPath $PackageDirectoryName
+
       $PackageBuildPathes = @{
         PackageScriptsPath        = $PackageScriptsPath;
-        # PackageSourcesPath        = $PackageSourcesPath;
         PackageBuildPath          = $PackageBuildPath;
-        # PackageBuildToolsPath     = $PackageBuildToolsPath;
-        # PackageBuildFilesPath     = $PackageBuildFilesPath
         PackageBuildRootPath      = $PackageBuildRootPath;
         PackageBuildRootToolsPath = $PackageBuildRootToolsPath;
-        PackageBuildRootFilesPath = $PackageBuildRootFilesPath
+        PackageBuildRootFilesPath = $PackageBuildRootFilesPath;
+        PackagePartsPath     = $PackagePartsPath
       }
 
       $PackageBuildPathArray = $PackageBuildPathes.Values | Sort

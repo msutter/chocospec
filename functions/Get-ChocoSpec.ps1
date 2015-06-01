@@ -49,6 +49,7 @@ Gets the chocospec
       'copyright',
       'releaseNotes',
       'sources',
+      'maxsize',
       'prep',
       'build',
       'install',
