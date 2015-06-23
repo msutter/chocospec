@@ -17,6 +17,8 @@ The scripts that Chocospec uses during the building of a package follow the step
 * Cleaning up.
 
 Although each of the scripts perform a specific function in the build process, they share a common environment.
+For detailed information about the environment varaibles, see VARIABLES.md.
+
 All of these environment variables are set for your use, to make it easier to write scripts that will do the right thing even if the build environment changes.
 
 Let's look at the scripts in the order they are executed.
@@ -35,7 +37,21 @@ The two first items on this list are common to the vast majority of all software
 
 The last item on the list can include creating directories or anything else required to get the sources in a ready-to-build state. As a result, a `prep` script can range from one line invoking a single `Invoke-AutoPrep` function, to many lines of tricky powershell programming.
 
-If the prep key is not specified in the chocospec file, a default `prep` script will still be run. It's default is to invoke the `Invoke-AutoPrep` function.
+If the prep key is not specified in the chocospec file, a default `prep` script will still be run.
+It's default is to invoke the `Invoke-AutoPrep` function.
+
+CAUTION: if you write your own `prep` script, the `Invoke-AutoPrep` function will NOT be executed. You'll have to include this function in your `prep` script.
+
+Example chocospec entry:
+```yaml
+  prep: |
+    Write-Verbose 'I am a useless custom prep script'
+    Write-Verbose 'because this function call is the default'
+    Invoke-AutoPrep
+```
+
+This example is would override the default action of the prep script, with exactly the same action as default.
+In other word, it's a total useless example, just here to show the syntax.
 
 ### The `build` Script
 
@@ -46,6 +62,28 @@ Like `prep` before it, the `build` script has the same assortment of environment
 Unlike `prep`, there are no functions available for use in the `build` script. The reason is simple: Either the commands required to build the software are simple (such as a single msbuild command), or they are so unique that a macro wouldn't make it easier to write the script.
 
 If the `build` key is not specified in the chocospec file, no default `build` script will be run.
+
+Example build entry:
+```yaml
+  build: |
+    # Nuget dependencies
+    $NugetCommand = 'C:\nuget.exe'
+    $NugetArgs = 'restore'
+    $NugetProcess = Invoke-Exec $NugetCommand $NugetArgs
+    Write-Verbose "$($NugetProcess.stdout)"
+
+    # MsBuild
+    $MsBuildCommand = 'C:\Program Files (x86)\MSBuild\12.0\Bin\MSBuild.exe'
+    $MsBuildArgs = 'MyApp.csproj'
+    $MsBuildProcess = Invoke-Exec $MsBuildCommand $MsBuildArgs
+    Write-Verbose "$($MsBuildProcess.stdout)"
+
+    # Update version release with commit count
+    $CommitCount   = Get-CommitCount "${GitRepoPath}"
+    $SpecVersion   = $version -as [Version]
+    $CustomVersion = '{0}.{1}.{2}.{3}' -f $SpecVersion.Major, $SpecVersion.Minor, $SpecVersion.Build, $CommitCount
+    Update-Nuspec -Path $NuspecPath -version $CustomVersion
+  ```
 
 ### The `install` Script
 
