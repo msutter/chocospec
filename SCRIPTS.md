@@ -83,7 +83,7 @@ Example build entry:
     $SpecVersion   = $version -as [Version]
     $CustomVersion = '{0}.{1}.{2}.{3}' -f $SpecVersion.Major, $SpecVersion.Minor, $SpecVersion.Build, $CommitCount
     Update-Nuspec -Path $NuspecPath -version $CustomVersion
-  ```
+```
 
 ### The `install` Script
 

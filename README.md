@@ -1,5 +1,4 @@
-Chocospec
-=========
+# Chocobuild
 
 Every chocolatey package needs some metadata so it can specify, under other things, its
 dependencies. Chocolatey packages usually uses the nuspec format, used by a developer-centric
@@ -10,34 +9,40 @@ Chocolatey is a bootstrapper that uses PowerShell scripts and the NuGet packagin
 install apps for you. Chocolatey extends the Nuget/Nuspec concept to bring applications down
 at the system level by using additional PowerShell scripts.
 
-Chocospec Format
-----------------
-The chocospec format is born to help you describe and control both the Powershell scripts and the Nuget packaging format.
+Chocobuild extends the ability to build a chocolatey package based on a spec file called the chocospec file.
+The features are inspired from the RPM spec format.
+
+## Chocospec
+
+At the heart of the chocolatey package building process is the chocospec file. It governs how a package is configured, what files will be installed and where they’ll be installed, and what system-level activity needs to take place before and after a package is installed.
+
+## Chocospec Format
 
 A Chocospec file should be named `<package_name>.chocospec.yaml`. It's written in the [YAML](http://www.yaml.org/) language.
 
 The fields can be ordered in 3 main Groups:
-- Nuspec specific fields
-- Build time specific fields
-- Install time specific fields
+ - Nuspec specific fields
+ - Build time specific fields
+ - Install time specific fields
 
-## At the top level are a series of Nuspec specific fields. The currently supported ones are:
+## At the top level are a series of Nuspec specific fields.
+###The currently supported ones are
 
-# id
+### id
 Required for every package.
 The ID defines what the package will actually be called.
 The ID will be included in the package package filename.
 
-# version
+### version
 Required for every package.
 The version line should be set to the version of the software being packaged.
 The version will also be included in the package filename.
 
-# description
+### description
 Required for every package.
 It is used to provide a more detailed description of the packaged software than the summary line.
 
-# authors
+### authors
 Required for every package.
 A list of authors of the package code.
 
@@ -93,35 +98,6 @@ Can be omitted if your package has no dependencies.
 Optional.
 Can be omitted if your package has no sources.
 A list of key/value pairs, commonly called a “hash” or a “dictionary”.
-
-# prep
-
-# build
-
-# install
-
-# check
-
-# clean
-
-## Finally, you can define install time specific field. The currently supported ones are:
-
-# prefix
-
-# chocolateyBeforeInstall
-
-# chocolateyAfterInstall
-
-# chocolateyBeforeUninstall
-
-# chocolateyAfterUninstall
-
-# chocolateyInstall
-
-# chocolateyUninstall
-if there is no specific uninstall executable, set the WMI package name
-to get a List o all VMI Packaget type in Powershel '(Get-WmiObject -Class Win32_Product).name'
-
 
 ## Example
 
@@ -189,7 +165,7 @@ uninstallers:
       - '/norestart'
 ```
 
-# Name
+## Name
 
 Every package needs a name.  It's how other packages will refer to yours,
 and how it will appear to the world, should you publish it.
@@ -198,7 +174,7 @@ Try to pick a name that is clear, terse, and not already in use.
 A quick search of packages on [chocolatey.org](https://chocolatey.org/packages)
 to make sure that nothing else is using your name is recommended.
 
-# Version
+## Version
 
 Every package has a version. A version number is required.
 
@@ -214,7 +190,7 @@ When you select a version, follow [semantic versioning](http://semver.org/spec/v
 
 [semantic versioning]: http://semver.org/spec/v2.0.0-rc.1.html
 
-# Description
+## Description
 
 Every package has a description. This should be relatively short and
 should tell users what they might want to know about your package.
@@ -223,7 +199,7 @@ Think of the description as the sales pitch for your package. Users will see it
 when they [browse for packages](https://chocolatey.org/packages).
 It should be simple plain text: no markdown or HTML.
 
-# Authors
+## Authors
 
 You're encouraged to use these fields to describe the author(s) of your package
 and provide contact information. `authors` should be used with a YAML list.
@@ -234,13 +210,13 @@ authors:
   - msysgit Committers
 ```
 
-# ProjectUrl
+## ProjectUrl
 
 Some packages may have a site that hosts documentation separate from the main
 homepage. If your package has that, you can also add a `ProjectUrl:` field
 with that URL. If provided, a link to it will be shown on your package's page.
 
-# Dependencies
+## Dependencies
 
 In this section you list each package that your package needs in order to work.
 
@@ -249,4 +225,34 @@ is also another implicit dependency all packages have: the the chocolateyHelpers
 Since the this powershell library evolves over time, a package may only work with certain
 versions of it.
 
+# PowerShell Variables
 
+The following is a list of most of the accessible variables which can be
+used in an embeded powershell script.
+
+## Path Variables
+**ScriptsPath**
+
+**SpecsPath**
+
+**SourcesPath**
+
+**BuildPath**
+
+**BuildRootPath**
+
+**NupkgsPath**
+
+**PartsPath**
+
+**PackageScriptsPath**
+
+**PackageBuildPath**
+
+**PackageBuildRootPath**
+
+**PackageBuildRootToolsPath**
+
+**PackageBuildRootFilesPath**
+
+**PackagePartsPath**
