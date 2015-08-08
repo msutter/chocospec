@@ -6,7 +6,8 @@ try {
   $myDir = Split-Path -Parent $MyInvocation.MyCommand.Path
   $pkgpath = (get-item $myDir).parent.FullName
   $psmodulepath = "$pkgpath/files"
-  Copy-Item $psmodulepath $installDir/$modulename -Recurse -Force
+  #Copy-Item $psmodulepath $installDir/$modulename -Recurse -Force
+  $null = Robocopy "${psmodulepath}" "${installDir}/${modulename}" /E
 
   Write-ChocolateySuccess "$packageName"
 } catch {

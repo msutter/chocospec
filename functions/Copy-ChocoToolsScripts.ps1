@@ -33,13 +33,15 @@ function Copy-ChocoToolsScripts
     Write-Verbose "FilesPath: ${FilesPath}"
 
     if ($scriptKeys.Contains('chocolateyInstall')) {
-        $null = Copy-Item -Path "${FilesPath}\chocoSpecInstall.ps1" `
-            -Destination "${AbsToolsDirectory}\chocolateyInstall.ps1"
+        # $null = Copy-Item -Path "${FilesPath}\chocoSpecInstall.ps1" `
+        #     -Destination "${AbsToolsDirectory}\chocolateyInstall.ps1"
+        $null = Robocopy "${FilesPath}" "${AbsToolsDirectory} chocolateyInstall.ps1"
     }
 
     if ($scriptKeys.Contains('chocolateyUninstall')) {
-        $null = Copy-Item -Path "${FilesPath}\chocoSpecUninstall.ps1" `
-            -Destination "${AbsToolsDirectory}\chocolateyUninstall.ps1"
+        # $null = Copy-Item -Path "${FilesPath}\chocoSpecUninstall.ps1" `
+        #     -Destination "${AbsToolsDirectory}\chocolateyUninstall.ps1"
+        $null = Robocopy "${FilesPath}" "${AbsToolsDirectory} chocolateyUninstall.ps1"
     }
 
 }

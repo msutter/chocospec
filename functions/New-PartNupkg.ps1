@@ -87,7 +87,8 @@ Function New-PartNupkg
     }
 
     # Copy original tools scripts
-    Get-ChildItem $ToolsPath | Copy-Item -Destination $MainPartToolsPartsPath
+    #Get-ChildItem $ToolsPath | Copy-Item -Destination $MainPartToolsPartsPath
+    $null = Robocopy "${ToolsPath}" "${MainPartToolsPartsPath}" /E
 
     # Initialize Dependencies for the main package
     $Dependencies = @()

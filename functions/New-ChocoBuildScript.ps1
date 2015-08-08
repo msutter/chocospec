@@ -30,13 +30,14 @@ function New-ChocoBuildScript {
 
   # Generate filename and path
   $ScriptFileName        = "chocoBuild${CamelCaseType}.ps1"
-  $ScriptFilePath        = Join-Path $PackageScriptsPath $ScriptFileName
   $DefaultScriptFilePath = Join-Path $DefaultScriptsPath $ScriptFileName
+  $ScriptFilePath        = Join-Path $PackageScriptsPath $ScriptFileName
 
   if ($Content) {
     "$($Content)" | Out-File -filepath $ScriptFilePath
   } else {
-    $null = Copy-Item $DefaultScriptFilePath $ScriptFilePath
+    #$null = Copy-Item $DefaultScriptFilePath $ScriptFilePath
+    $null = Robocopy "${DefaultScriptsPath}" "${PackageScriptsPath}" $ScriptFileName
   }
 
   Return $ScriptFilePath
