@@ -34,14 +34,12 @@ function Copy-ChocoToolsScripts
 
     if ($scriptKeys.Contains('chocolateyInstall')) {
         $null = Copy-Item -Path "${FilesPath}\chocoSpecInstall.ps1" `
-            -Destination "${AbsToolsDirectory}\chocolateyInstall.ps1"
-        $null = Rename-Item -path "${AbsToolsDirectory}/chocoSpecInstall.ps1" -newname "${AbsToolsDirectory}/chocolateyInstall.ps1"
+        -Destination "${AbsToolsDirectory}\chocolateyInstall.ps1"
     }
 
     if ($scriptKeys.Contains('chocolateyUninstall')) {
         $null = Copy-Item -Path "${FilesPath}\chocoSpecUninstall.ps1" `
-            -Destination "${AbsToolsDirectory}\chocolateyUninstall.ps1"
-        $null = Rename-Item -path "${AbsToolsDirectory}/chocoSpecUninstall.ps1" -newname "${AbsToolsDirectory}/chocolateyUninstall.ps1"
+        -Destination "${AbsToolsDirectory}\chocolateyUninstall.ps1"
     }
 
 }
