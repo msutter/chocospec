@@ -368,8 +368,7 @@ Param
 
           local {
             Write-Verbose "Copying $($source.path) into ${SourcesPath}"
-            #$null = Copy-Item -Force "$($source.path)" "${SourcesPath}/."
-            $null = Robocopy "$($source.path)" "${SourcesPath}" /E
+            $null = Copy-Item -Force "$($source.path)" "${SourcesPath}/."
           }
         }
       }
@@ -521,23 +520,18 @@ Param
         -Workspace        $PackagePartsPath `
         -Verbose
 
-      # $null = Get-ChildItem $PartsPathes.NuPkgPartsPath | Copy-Item -Destination $NupkgsPath
-      $null = Robocopy "$($PartsPathes.NuPkgPartsPath)" "${NupkgsPath}" /E
-      # $null = Get-ChildItem $PartsPathes.NuspecPartsPath | Copy-Item -Destination $SpecsPath
-      $null = Robocopy "$($PartsPathes.NuspecPartsPath)" "${SpecsPath}" /E
+      $null = Get-ChildItem "$($PartsPathes.NuPkgPartsPath)" | Copy-Item -Destination "${NupkgsPath}"
+      $null = Get-ChildItem "$($PartsPathes.NuspecPartsPath)" | Copy-Item -Destination "${SpecsPath}"
 
     } else {
-      # $null = Copy-Item $TempNuPkgPath $NupkgsPath
-      $null = Robocopy "${PackagePartsPath}" "${NupkgsPath}" $NupkgFileName
-      # $null = Copy-Item $NuspecPath $SpecsPath
-      $null = Robocopy "${PackagePartsPath}" "${SpecsPath}" $NuspecFileName
+      $null = Copy-Item "${TempNuPkgPath}" "${NupkgsPath}"
+      $null = Copy-Item "${NuspecPath}" "${SpecsPath}"
     }
 
     #############################################################
     # Copy nupkgs to output directory
     #############################################################
-    # $null = Get-ChildItem $NupkgsPath | Copy-Item -Destination $AbsOutputDirectory
-    $null = Robocopy "${NupkgsPath}" "${AbsOutputDirectory}" /E
+    $null = Get-ChildItem "${NupkgsPath}" | Copy-Item -Destination "${AbsOutputDirectory}"
 
     #############################################################
     # Clean

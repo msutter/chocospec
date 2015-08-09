@@ -23,8 +23,7 @@ See the %install section below for more.
 
   # Deploy the content to root path
   $null = New-Item -Force -ItemType Directory $PackageBuildRootFilesPath
-  #$null = Copy-Item -Force -Recurse "${PackageBuildPath}\*" "${PackageBuildRootFilesPath}"
-  $null = Robocopy "${PackageBuildPath}" "${PackageBuildRootFilesPath}" /E
+  $null = Copy-Item -Force -Recurse "${PackageBuildPath}\*" "${PackageBuildRootFilesPath}"
 
 }
 

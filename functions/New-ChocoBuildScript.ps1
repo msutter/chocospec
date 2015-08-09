@@ -36,8 +36,7 @@ function New-ChocoBuildScript {
   if ($Content) {
     "$($Content)" | Out-File -filepath $ScriptFilePath
   } else {
-    #$null = Copy-Item $DefaultScriptFilePath $ScriptFilePath
-    $null = Robocopy "${DefaultScriptsPath}" "${PackageScriptsPath}" $ScriptFileName
+    $null = Copy-Item "${DefaultScriptFilePath}" "${ScriptFilePath}"
   }
 
   Return $ScriptFilePath

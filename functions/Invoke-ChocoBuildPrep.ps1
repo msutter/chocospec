@@ -38,8 +38,7 @@ See the %prep section below for more.
     if ($T) {
 
         $null = New-Item -Force -ItemType Directory $PackageBuildPath
-        #$null = Copy-Item -Force -Recurse -Exclude .git "${SourcePath}" "${PackageBuildPath}"
-        $null = Robocopy "${SourcePath}" "${PackageBuildPath}" /XE .git
+        $null = Copy-Item -Force -Recurse -Exclude .git "${SourcePath}" "${PackageBuildPath}"
     } else {
 
       [System.Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem") | Out-Null

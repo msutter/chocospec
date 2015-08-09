@@ -87,8 +87,7 @@ Function New-PartNupkg
     }
 
     # Copy original tools scripts
-    #Get-ChildItem $ToolsPath | Copy-Item -Destination $MainPartToolsPartsPath
-    $null = Robocopy "${ToolsPath}" "${MainPartToolsPartsPath}" /E
+    Get-ChildItem "${ToolsPath}" | Copy-Item -Destination "${MainPartToolsPartsPath}"
 
     # Initialize Dependencies for the main package
     $Dependencies = @()
@@ -110,7 +109,7 @@ Function New-PartNupkg
       }
 
       # Add install/uninstall chocolatey scripts
-      Copy-ChocoToolsScripts -ToolsDirectory $PartToolsPartsPath
+      Copy-ChocoToolsScripts -ToolsDirectory "${PartToolsPartsPath}"
 
       $NuspecParams = @{}
 

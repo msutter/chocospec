@@ -80,8 +80,7 @@ See the %prep section below for more.
       } else {
         Write-Verbose "Source file is not a zip archive"
         $null = New-Item -Force -ItemType Directory $PackageBuildPath
-        # $null = Copy-Item -Force -Recurse "${SourcePath}" "${PackageBuildPath}"
-        $null = Robocopy "${SourcePath}" "${PackageBuildPath}" /E
+        $null = Copy-Item -Force -Recurse "${SourcePath}" "${PackageBuildPath}"
       }
     } # httprepo
 
@@ -92,8 +91,7 @@ See the %prep section below for more.
 
         $SourcePath = Join-Path "${SourcesPath}" $RepoName
         $null = New-Item -Force -ItemType Directory $PackageBuildPath
-        #$null = Get-ChildItem "${SourcePath}" -Exclude .git | Copy-Item -Force -Recurse -Destination "${PackageBuildPath}"
-        $null = Robocopy "${SourcePath}" "${PackageBuildPath}" /E /XD .git
+        $null = Get-ChildItem "${SourcePath}" -Exclude .git | Copy-Item -Force -Recurse -Destination "${PackageBuildPath}"
     } # git
 
   } # switch
