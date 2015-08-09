@@ -51,16 +51,16 @@ See the %prep section below for more.
 
         $BasePathes       = ($EntriesBasePathes | select -unique)
         $BasePathIsUnique = $BasePathes.count -eq 1
+        $BasePathIsDir    = $BasePathes -is [System.IO.DirectoryInfo]
         $BasePathisValid  = $BasePathes -eq $PackageDirectoryName
 
         # Add Pathes infos
         Write-Verbose "BasePathes: ${BasePathes}"
-        Write-Verbose "BasePathes 0: $($BasePathes[0])"
-        Write-Verbose "BasePathes 0 is dir ?: $($BasePathes[0] -is [System.IO.DirectoryInfo])"
+        Write-Verbose "BasePathIsDir: ${BasePathIsDir}"
         Write-Verbose "BasePathIsUnique: ${BasePathIsUnique}"
         Write-Verbose "BasePathisValid: ${BasePathisValid}"
 
-        if (!$BasePathIsUnique) {
+        if (!$BasePathIsUnique -Or !$BasePathIsDir)  {
           # Create the directory and unpack in it
           Write-Verbose "Zip Content has no base directory ! Creating ${PackageDirectoryName} as base directory"
           $null = New-Item -Force -ItemType Directory $PackageBuildPath
