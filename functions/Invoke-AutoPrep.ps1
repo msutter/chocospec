@@ -50,7 +50,7 @@ See the %prep section below for more.
         }
 
         $BasePathes       = ($EntriesBasePathes | select -unique)
-        $BasePathIsUnique = $BasePathes.count -eq 1
+        $BasePathIsUnique = (($BasePathes.count -eq 1) AND ($BasePathes[0] -is [System.IO.DirectoryInfo]))
         $BasePathisValid  = $BasePathes -eq $PackageDirectoryName
 
         # Add Pathes infos
