@@ -50,11 +50,13 @@ See the %prep section below for more.
         }
 
         $BasePathes       = ($EntriesBasePathes | select -unique)
-        $BasePathIsUnique = (($BasePathes.count -eq 1) AND ($BasePathes[0] -is [System.IO.DirectoryInfo]))
+        $BasePathIsUnique = $BasePathes.count -eq 1
         $BasePathisValid  = $BasePathes -eq $PackageDirectoryName
 
         # Add Pathes infos
         Write-Verbose "BasePathes: ${BasePathes}"
+        Write-Verbose "BasePathes 0: $($BasePathes[0])"
+        Write-Verbose "BasePathes 0 is dir ?: $($BasePathes[0] -is [System.IO.DirectoryInfo])"
         Write-Verbose "BasePathIsUnique: ${BasePathIsUnique}"
         Write-Verbose "BasePathisValid: ${BasePathisValid}"
 
