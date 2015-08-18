@@ -28,7 +28,7 @@ function Get-LastTag {
         $AbsPath = Join-Path (Get-Location) $Path
     }
 
-    $LastTag = & "${GitCommand}" -C ${AbsPath} git describe --abbrev=0 --tags
+    $LastTag = & "${GitCommand}" -C ${AbsPath} describe --abbrev=0 --tags
 
     $LastTag
 }
