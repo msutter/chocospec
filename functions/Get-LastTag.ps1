@@ -19,7 +19,7 @@ function Get-LastTag {
         # Specifies the git binary command path
         [ValidateScript( { Test-Path($_) } )]
         [Parameter(Mandatory = $false, Position = 1, ValueFromPipeline = $true )]
-        [string]$GitCommand = 'C:\Program Files (x86)\Git\bin\git.exe',
+        [string]$GitCommand = 'C:\Program Files (x86)\Git\bin\git.exe'
     )
 
     if ([System.IO.Path]::IsPathRooted($Path)) {
