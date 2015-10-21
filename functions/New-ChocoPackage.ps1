@@ -334,7 +334,9 @@ Param
             }
 
             Write-Verbose "Downloading ${Filename} from ${HttpRepoHost}"
-            Invoke-WebRequest -Uri $FullUrl -OutFile $FilePath
+
+            $wc = New-Object net.webclient
+            $wc.Downloadfile($FullUrl, $FilePath)
           }
 
           git {
