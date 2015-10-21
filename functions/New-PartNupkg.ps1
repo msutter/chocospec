@@ -70,6 +70,7 @@ Function New-PartNupkg
     }
 
     # Split files content
+    Write-Verbose 'converting to zip part'
     $Convertion = ConvertTo-ZipParts $FilesPath -OutputPath $ZipPartsPath -MaxOutputSegmentSize $MaxSizeInByte
     Write-Verbose $Convertion
 
