@@ -1,16 +1,14 @@
 $packageName = "chocoSpec"
 $moduleName = "chocoSpec"
 
-try {
-  $installDir = Join-Path $PSHome "Modules"
-  $myDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-  $pkgpath = (get-item $myDir).parent.FullName
-  $psmodulepath = "$pkgpath/files"
-  $null = Copy-Item "${psmodulepath}" "${installDir}/${modulename}" -Recurse -Force
+$installDir   = Join-Path $PSHome "Modules"
+$installPath  = Join-Path $installDir $modulename
+$myDir        = Split-Path -Parent $MyInvocation.MyCommand.Path
+$pkgpath      = (get-item $myDir).parent.FullName
+$psmodulepath = "$pkgpath/files"
 
-  Write-ChocolateySuccess "$packageName"
-} catch {
-  Write-ChocolateyFailure "$packageName" "$($_.Exception.Message)"
-  throw
+if(Test-Path -Path "${installPath}"){
+  $null = Remove-Item -Recurse $installPath
 }
 
+$null = Copy-Item $psmodulepath $installPath -Recurse

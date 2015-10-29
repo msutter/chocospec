@@ -1,4 +1,4 @@
-# Chocobuild
+# ChocoBuild
 
 Every chocolatey package needs some metadata so it can specify, under other things, its
 dependencies. Chocolatey packages usually uses the nuspec format, used by a developer-centric
