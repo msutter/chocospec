@@ -14,7 +14,7 @@ See the %prep section below for more.
   Param
   (
     [Parameter(Mandatory = $false)]
-    [switch] $D,
+    [switch] $D
   )
 
   if (!$D) {
