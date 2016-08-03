@@ -39,7 +39,7 @@ function New-ChocoSpecBuildEnvironment {
     $BuildRootPath  = Join-Path $AbsPath 'BUILDROOT'
     $NupkgsPath     = Join-Path $AbsPath 'NUPKGS'
     $SpecsPath      = Join-Path $AbsPath 'NUSPECS'
-    $PartsPath = Join-Path $AbsPath 'PARTS'
+    $PartsPath      = Join-Path $AbsPath 'PARTS'
     $ScriptsPath    = Join-Path $AbsPath 'SCRIPTS'
     $SourcesPath    = Join-Path $AbsPath 'SOURCES'
 
