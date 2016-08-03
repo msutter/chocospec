@@ -95,4 +95,11 @@ See the %prep section below for more.
 
     } # switch
   } # foreach $sources
+
+  # make sure the build path exists without source definition
+  if (!(Test-Path $PackageBuildPath)) {
+    $null = New-Item -Force -ItemType Directory $PackageBuildPath
+  }
 }
+
+
