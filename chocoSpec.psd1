@@ -24,7 +24,7 @@ Author = 'Marc Sutter'
 CompanyName = 'Marc Sutter'
 
 # Copyright statement for this module
-Copyright = '(c) 2015 Marc Sutter. All rights reserved.'
+Copyright = '(c) 2016 Marc Sutter. All rights reserved.'
 
 # License for this module.
 LicenseUri = 'http://www.gnu.org/licenses/gpl-3.0-standalone.html'
