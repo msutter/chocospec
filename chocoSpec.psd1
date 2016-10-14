@@ -26,6 +26,12 @@ CompanyName = 'Marc Sutter'
 # Copyright statement for this module
 Copyright = '(c) 2015 Marc Sutter. All rights reserved.'
 
+# License for this module.
+LicenseUri = 'GNU GPLv3'
+
+# A URL to the main website for this project.
+ProjectUri = 'http://www.gnu.org/licenses/gpl-3.0-standalone.html'
+
 # Description of the functionality provided by this module
 # Description = ''
 
