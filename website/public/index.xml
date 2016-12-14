@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Chocospec</title>
+    <link>http://msutter.github.io/chocospec/index.xml</link>
+    <description>Recent content on Chocospec</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <atom:link href="http://msutter.github.io/chocospec/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>About Chocospec</title>
+      <link>http://msutter.github.io/chocospec/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://msutter.github.io/chocospec/about/</guid>
+      <description>
+
+&lt;p&gt;Chocospec extends the ability to build a chocolatey package based on a spec file called the chocospec file. The features are inspired from the RPM spec format.&lt;/p&gt;
+
+&lt;h2 id=&#34;overview&#34;&gt;Overview&lt;/h2&gt;
+
+&lt;p&gt;Chocolatey is a bootstrapper that uses PowerShell scripts and the NuGet packaging format to install apps for you. Chocolatey extends the Nuget/Nuspec concept to bring applications down at the system level by using additional PowerShell scripts.&lt;/p&gt;
+
+&lt;p&gt;Every chocolatey package needs some metadata so it can specify, under other things, its dependencies. Chocolatey packages usually uses the nuspec format, used by a developer-centric package manager called NuGet. A .nuspec file is a manifest that uses XML to describe how to build the package. For information about the nuspec format, see &lt;a href=&#34;http://docs.nuget.org/create/nuspec-reference&#34;&gt;Nuspec Reference&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;At the heart of the chocolatey package building process is the chocospec file. It governs how a package is configured, what files will be installed, where they’ll be installed, and what system-level activity needs to take place before and after a package is installed.&lt;/p&gt;
+
+&lt;h2 id=&#34;features&#34;&gt;Features&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;On common yaml file to define the package&lt;/li&gt;
+&lt;li&gt;Splitting packages in multiple parts to avoid upload size limits&lt;/li&gt;
+&lt;li&gt;Hooks to execute powershell scripts before and after the installation&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
