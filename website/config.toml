@@ -1,0 +1,9 @@
+baseurl = "http://msutter.github.io/chocospec"
+contentdir = "content"
+theme = "hugo-theme-learn"
+title = "Chocospec"
+
+[params]
+  description = "Documentation for the Chocospec usage"
+  author = "Marc Sutter <marc.sutter@swissflow.ch>"
+  menu = [ "about"]
